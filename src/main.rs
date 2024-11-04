@@ -41,7 +41,7 @@ fn get_possible_sum_combinations(parents_and_children: &mut (Vec<Parents>, Vec<C
   // Creates a file object and buffer reader
   let file = File::open("D:\\Code\\Kakuro_combinations.txt");
   let reader = BufReader::new(file.unwrap());
-  let mut combinations: HashMap<String, Vec<Vec<u8>>> = HashMap::new();
+  let mut combinations: HashMap<String, Vec<String>> = HashMap::new();
   let mut list_of_combinations: HashSet<String> = HashSet::new();
 
   for parent in &parents_and_children.0 {
@@ -64,11 +64,7 @@ fn get_possible_sum_combinations(parents_and_children: &mut (Vec<Parents>, Vec<C
     }
 
     // extract the second item from elements
-    let values: Vec<u8> = elements.next().unwrap().to_string() // gets the string array of the combination i.e. [1, 2, 3]
-      .trim_matches(&['[', ']'][..]) // Remove the brackets
-      .split(',') // split at the commas
-      .filter_map(|s| s.trim().parse::<u8>().ok()) // map through each element and parse it
-      .collect(); // put all the parsed elements into a collection
+    let values  = elements.next().unwrap().to_string();
 
     if combinations.contains_key(&data) {
       combinations.entry(data).and_modify(|combos| combos.push(values));
@@ -77,9 +73,26 @@ fn get_possible_sum_combinations(parents_and_children: &mut (Vec<Parents>, Vec<C
     }
   }
 
-  for parent in &parents_and_children.0 {
-    todo!();
+  for parent_index in 0..parents_and_children.0.len() {
+    let value_size = &parents_and_children.0[parent_index].value_size;
+
+    let combos = combinations.get(value_size).unwrap();
+
+    for combo in combos {
+      let option = (*combo).as_str().to_string();
+
+      let values: Vec<u8> = option // gets the string array of the combination i.e. [1, 2, 3]
+        .trim_matches(&['[', ']'][..]) // Remove the brackets
+        .split(',') // split at the commas
+        .filter_map(|s| s.trim().parse::<u8>().ok()) // map through each element and parse it
+        .collect(); // put all the parsed elements into a collection
+
+        parents_and_children.0[parent_index].combinations.push(values);
+    }
+
+    println!("{:?}, {:?}", &parents_and_children.0[parent_index].value_size, &parents_and_children.0[parent_index].combinations);
   }
+
 
   for combo in combinations {
     println!("{}, {:?}\n", combo.0, combo.1);
@@ -118,16 +131,16 @@ fn insert_puzzle(parents_and_children: &mut (Vec<Parents>, Vec<Children>)) {
           let horz = values.next().unwrap_or("-").to_string();
           let mut cell = GridCell { vert: -1, horz: -1, child: -1 };
 
-          if vert != "-" {
-            cell.vert = parents_and_children.0.len() as i8;
-            let sum_value: u8 = vert.split("-").next().unwrap().parse().unwrap(); 
-            parents_and_children.0.push(Parents { children: Vec::new(), sum: sum_value, value_size: vert, combinations: Vec::new() });
-          }
+          let mut is_horz = false;
+          for relation in [vert, horz] {
+            if relation != "-" {
+              let length = parents_and_children.0.len() as i8;
+              if is_horz { cell.horz = length; } else { cell.vert = length; }
 
-          if horz != "-" {
-            cell.horz = parents_and_children.0.len() as i8;
-            let sum_value: u8 = horz.split("-").next().unwrap().parse().unwrap();
-            parents_and_children.0.push(Parents { children: Vec::new(), sum: sum_value, value_size: horz, combinations: Vec::new() });
+              let sum_value: u8 = relation.split("-").next().unwrap().parse().unwrap(); 
+              parents_and_children.0.push(Parents { children: Vec::new(), sum: sum_value, value_size: relation, combinations: Vec::new() });
+            }
+            is_horz = true;
           }
 
           grid.last_mut().unwrap().push(cell);
@@ -141,9 +154,6 @@ fn insert_puzzle(parents_and_children: &mut (Vec<Parents>, Vec<Children>)) {
     }
   }
 
-  let max_rows = grid.len();
-  let max_cols = grid[0].len();
-
   for (current_row_num, row) in grid.iter().enumerate() {
     for (current_col_num, col) in row.iter().enumerate() {
 
@@ -151,37 +161,26 @@ fn insert_puzzle(parents_and_children: &mut (Vec<Parents>, Vec<Children>)) {
         continue;
       }
 
-      if col.horz != -1 {
-        let mut col_num = current_col_num + 1;
-        let parent_position = grid[current_row_num][current_col_num].horz as usize;
+      for relation in ["vert", "horz"] {
+        let max_pos = if relation == "vert" { grid.len() } else { grid[0].len() };
+        let relation_index = if relation == "vert" { col.vert } else { col.horz };
+        let parent_cell = &grid[current_row_num][current_col_num];
 
-        while col_num < max_cols {
-          let child_position = grid[current_row_num][col_num].child;
-
-          if child_position == -1 {
-            break;
+        if relation_index != -1 {
+          let mut pos_num = if relation == "vert" { current_row_num + 1 } else { current_col_num + 1 };
+          let parent_position = if relation == "vert" { parent_cell.vert as usize } else { parent_cell.horz as usize };
+  
+          while pos_num < max_pos {
+            let child_position = if relation == "vert" { grid[pos_num][current_col_num].child } else { grid[current_row_num][pos_num].child };
+  
+            if child_position == -1 {
+              break;
+            }
+  
+            parents_and_children.0[parent_position].children.push(child_position as u16);
+  
+            pos_num += 1;
           }
-
-          parents_and_children.0[parent_position].children.push(child_position as u16);
-
-          col_num += 1;
-        }
-      }
-
-      if col.vert != -1 {
-        let mut row_num = current_row_num + 1;
-        let parent_position = grid[current_row_num][current_col_num].vert as usize;
-
-        while row_num < max_rows {
-          let child_position = grid[row_num][current_col_num].child;
-
-          if child_position == -1 {
-            break;
-          }
-
-          parents_and_children.0[parent_position].children.push(child_position as u16);
-
-          row_num += 1;
         }
       }
     }
@@ -198,7 +197,6 @@ fn insert_puzzle(parents_and_children: &mut (Vec<Parents>, Vec<Children>)) {
 }
 
 fn main() {
-  let mut list_of_combinations: HashSet<String> = HashSet::new();
   let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
 
   insert_puzzle(&mut parents_and_children);
