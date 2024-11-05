@@ -20,7 +20,7 @@ struct GridCell {
 
 #[derive(Debug)]
 struct Parents {
-  children: Vec<u16>,
+  children: Vec<usize>,
   sum: u8,
   value_size: String,
   combinations: Vec<Vec<u8>>
@@ -28,8 +28,8 @@ struct Parents {
 
 #[derive(Debug)]
 struct Children {
-  parents: (u16, u16),
-  neighbors: Vec<u16>,
+  parents: (usize, usize),
+  siblings: Vec<usize>,
   value: u8,
   possible_values: Vec<u8>
 }
@@ -87,7 +87,7 @@ fn get_possible_sum_combinations(parents_and_children: &mut (Vec<Parents>, Vec<C
         .filter_map(|s| s.trim().parse::<u8>().ok()) // map through each element and parse it
         .collect(); // put all the parsed elements into a collection
 
-        parents_and_children.0[parent_index].combinations.push(values);
+      parents_and_children.0[parent_index].combinations.push(values);
     }
 
     println!("{:?}, {:?}", &parents_and_children.0[parent_index].value_size, &parents_and_children.0[parent_index].combinations);
@@ -147,7 +147,7 @@ fn insert_puzzle(parents_and_children: &mut (Vec<Parents>, Vec<Children>)) {
         },
         'x' => {
           grid.last_mut().unwrap().push(GridCell { vert: -1, horz: -1, child: parents_and_children.1.len() as i8 });
-          parents_and_children.1.push(Children { parents: (0, 0), neighbors: Vec::new(), value: 0, possible_values: Vec::new() });
+          parents_and_children.1.push(Children { parents: (65535, 65535), siblings: Vec::new(), value: 0, possible_values: Vec::new() });
         },
         _ => println!("ERROR"),
       }
@@ -177,7 +177,7 @@ fn insert_puzzle(parents_and_children: &mut (Vec<Parents>, Vec<Children>)) {
               break;
             }
   
-            parents_and_children.0[parent_position].children.push(child_position as u16);
+            parents_and_children.0[parent_position].children.push(child_position as usize);
   
             pos_num += 1;
           }
@@ -196,10 +196,52 @@ fn insert_puzzle(parents_and_children: &mut (Vec<Parents>, Vec<Children>)) {
   println!("{}", parents_and_children.1.len());
 }
 
+fn connect_children_to_parents(parents_and_children: &mut (Vec<Parents>, Vec<Children>)) {
+  for (index, parent) in parents_and_children.0.iter().enumerate() {
+    for child_index in &parent.children {
+      let child = &mut parents_and_children.1[*child_index];
+      let parents_of_child = &mut child.parents;
+      
+      // 65535 is used to ensure the first parent is vertical
+      if parents_of_child.0 == 65535 {
+        parents_of_child.0 = index;
+      } else {
+        parents_of_child.1 = index;
+      }
+
+      // sets the siblings of the child to be its parents' children that are not itself
+      child.siblings.append(&mut parent.children.clone());
+      child.siblings.retain(|e| e != child_index);
+    }
+    println!("{:?}", parent);
+  }
+
+  for child in &mut parents_and_children.1 {
+    // Get both parents of the selected child
+    let parent_1 = &parents_and_children.0[child.parents.0];
+    let parent_2 = &parents_and_children.0[child.parents.1];
+
+    // Flattening the combinations into HashSets of unique values
+    let parent_1_values: HashSet<u8> = parent_1.combinations.iter().flat_map(|v| v.iter()).cloned().collect();
+    let parent_2_values: HashSet<u8> = parent_2.combinations.iter().flat_map(|v| v.iter()).cloned().collect();
+
+    // Find intersection and collect into a Vec<u8>
+    let intersection_values: Vec<u8> = parent_1_values.intersection(&parent_2_values).cloned().collect();
+
+    // Append intersection values to child.possible_values
+    child.possible_values.extend(intersection_values);
+  }
+
+  for child in &parents_and_children.1 {
+    println!("{:?}", child);
+  }
+}
+
 fn main() {
   let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
 
   insert_puzzle(&mut parents_and_children);
   get_possible_sum_combinations(&mut parents_and_children);
+  connect_children_to_parents(&mut parents_and_children);
   println!("Hello, world!");
 }
