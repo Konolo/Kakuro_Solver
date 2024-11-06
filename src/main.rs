@@ -11,6 +11,8 @@ use std::collections::{HashMap, HashSet};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
+/// * if a value is negative then that type of cell does not exist in that location
+/// * if the value is not negative, it is the index to the Parent or Children within the parents_and_children tuple
 #[derive(Debug)]
 struct GridCell {
   vert: i8,
@@ -34,16 +36,21 @@ struct Children {
   possible_values: Vec<u8>
 }
 
-// Parameters:
-// - list: A list of all the sums with their sizes which are found in the puzzle to solve
-// Takes the list of needed combinations and retrieves them from the precomputed list of combinations
-fn get_possible_sum_combinations(parents_and_children: &mut (Vec<Parents>, Vec<Children>)) {
+/// Parameters:
+/// - parents_and_children: A mutable reference to a tuple containing a list of Parents and Children
+///      - This variable contains all prevalent information for solving the puzzle
+///
+/// Description:
+/// - Gathers the needed sum combinations from the parents, retrieves them from the precomputed list
+///      of combinations, and adds it to the list of possible combinations for that parent
+fn set_possible_combinations(parents_and_children: &mut (Vec<Parents>, Vec<Children>)) {
   // Creates a file object and buffer reader
   let file = File::open("D:\\Code\\Kakuro_combinations.txt");
   let reader = BufReader::new(file.unwrap());
   let mut combinations: HashMap<String, Vec<String>> = HashMap::new();
   let mut list_of_combinations: HashSet<String> = HashSet::new();
 
+  // creates a list of needed sum combinations from the parents 
   for parent in &parents_and_children.0 {
     list_of_combinations.insert(parent.value_size.as_str().to_string());
   }
@@ -55,7 +62,7 @@ fn get_possible_sum_combinations(parents_and_children: &mut (Vec<Parents>, Vec<C
     // Splits the line into multiple segments
     let mut elements = line.as_str().split(" ");
 
-    // extract the first item from elements
+    // extract the first item from elements i.e. 11-2
     let data: String = elements.next().unwrap().to_string();
 
     // Check if the data is in the list of needed sum combinations
@@ -63,9 +70,11 @@ fn get_possible_sum_combinations(parents_and_children: &mut (Vec<Parents>, Vec<C
       continue;
     }
 
-    // extract the second item from elements
+    // extract the second item from elements i.e. [3, 8]
     let values  = elements.next().unwrap().to_string();
 
+    // either modify an existing entry by adding another combination to the Vector
+    //    or create a new entry depending on if the key exists
     if combinations.contains_key(&data) {
       combinations.entry(data).and_modify(|combos| combos.push(values));
     } else {
@@ -73,36 +82,43 @@ fn get_possible_sum_combinations(parents_and_children: &mut (Vec<Parents>, Vec<C
     }
   }
 
-  for parent_index in 0..parents_and_children.0.len() {
-    let value_size = &parents_and_children.0[parent_index].value_size;
+  // loop through all of the parents
+  for parent in &mut parents_and_children.0 {
+    let value_size = &parent.value_size;
 
     let combos = combinations.get(value_size).unwrap();
 
+    // loop through all the possible combinations and add it to the parents combinations after it is in the proper form
     for combo in combos {
       let option = (*combo).as_str().to_string();
 
+      // this takes a string array and turns it into a Vector of values whose type is u8
       let values: Vec<u8> = option // gets the string array of the combination i.e. [1, 2, 3]
         .trim_matches(&['[', ']'][..]) // Remove the brackets
         .split(',') // split at the commas
         .filter_map(|s| s.trim().parse::<u8>().ok()) // map through each element and parse it
         .collect(); // put all the parsed elements into a collection
 
-      parents_and_children.0[parent_index].combinations.push(values);
+      parent.combinations.push(values);
     }
 
-    println!("{:?}, {:?}", &parents_and_children.0[parent_index].value_size, &parents_and_children.0[parent_index].combinations);
+    println!("{:?}, {:?}", parent.value_size, parent.combinations);
   }
 
 
   for combo in combinations {
-    println!("{}, {:?}\n", combo.0, combo.1);
+    println!("{:?}, {:?}", combo.0, combo.1);
   }
 }
 
-// Parameters:
-// - list: A list of all the sums with their sizes which are found in the puzzle to solve
-//
-fn insert_puzzle(parents_and_children: &mut (Vec<Parents>, Vec<Children>)) {
+/// Parameters:
+/// - parents_and_children: A mutable reference to a tuple containing a list of Parents and Children
+///      - This variable contains all prevalent information for solving the puzzle
+///
+/// Description:
+/// - This function reads in the puzzle from a file and establishes a grid which acts like a scaffold 
+///      which allows the function to connect the parents to their children
+fn insert_puzzle_and_connect_parents_and_children(parents_and_children: &mut (Vec<Parents>, Vec<Children>)) {
   // Creates a file object and buffer reader
   let file = File::open("D:\\Code\\Kakuro_input.txt").expect("Failed to open file");
   let reader = BufReader::new(file);
@@ -112,7 +128,6 @@ fn insert_puzzle(parents_and_children: &mut (Vec<Parents>, Vec<Children>)) {
   for line in reader.lines() {
     let line = line.expect("Failed to read line");
     grid.push(Vec::new());
-    //println!("{}", grid.len().to_string());
         
     // Split the line into multiple segments
     let mut elements = line.split_whitespace(); // Use `split_whitespace` to split by spaces
@@ -120,65 +135,89 @@ fn insert_puzzle(parents_and_children: &mut (Vec<Parents>, Vec<Children>)) {
     // Extract the first item (the board) from elements
     let board = elements.next().unwrap();
 
+    // loop through each character in the board
     for c in board.chars() {
       match c {
         '-' => {
+          // if - push a nothing cell onto the end of the grid
           grid.last_mut().unwrap().push(GridCell { vert: -1, horz: -1, child: -1 });
         },
         '\\' => {
+          // if \
+          // grab the next string from element and split it at the \, then grab both strings individually
           let mut values = elements.next().unwrap().split('\\');
           let vert = values.next().unwrap_or("-").to_string();
           let horz = values.next().unwrap_or("-").to_string();
           let mut cell = GridCell { vert: -1, horz: -1, child: -1 };
 
-          let mut is_horz = false;
-          for relation in [vert, horz] {
+          // loop through both of the strings collected above
+          for (index, relation) in [vert, horz].iter().enumerate() {
             if relation != "-" {
+              // if there is a value then set the proper GridCell attribute with the positional index
               let length = parents_and_children.0.len() as i8;
-              if is_horz { cell.horz = length; } else { cell.vert = length; }
+              if index == 0 { cell.vert = length; } else { cell.horz = length; }
 
+              // split the string and parse out the size component, then add a new Parent to parents_and_children
               let sum_value: u8 = relation.split("-").next().unwrap().parse().unwrap(); 
-              parents_and_children.0.push(Parents { children: Vec::new(), sum: sum_value, value_size: relation, combinations: Vec::new() });
+              parents_and_children.0.push(Parents { children: Vec::new(), sum: sum_value, value_size: relation.to_string(), combinations: Vec::new() });
             }
-            is_horz = true;
           }
 
           grid.last_mut().unwrap().push(cell);
         },
         'x' => {
+          // if x then add a child cell to the end of the grid and add a new Child to parents_and_children
           grid.last_mut().unwrap().push(GridCell { vert: -1, horz: -1, child: parents_and_children.1.len() as i8 });
-          parents_and_children.1.push(Children { parents: (65535, 65535), siblings: Vec::new(), value: 0, possible_values: Vec::new() });
+          parents_and_children.1.push(Children { parents: (0, 0), siblings: Vec::new(), value: 0, possible_values: Vec::new() });
         },
         _ => println!("ERROR"),
       }
     }
   }
 
+  // now that the grid is completely built loop through each row and column
   for (current_row_num, row) in grid.iter().enumerate() {
     for (current_col_num, col) in row.iter().enumerate() {
 
+      // check that either horz or vert is set
       if col.horz == -1 && col.vert == -1 {
         continue;
       }
 
+      // loop through the following twice, first as vert then as horz
       for relation in ["vert", "horz"] {
+        // get the max index of and the Parent index of the vertical or horizontal
         let max_pos = if relation == "vert" { grid.len() } else { grid[0].len() };
         let relation_index = if relation == "vert" { col.vert } else { col.horz };
         let parent_cell = &grid[current_row_num][current_col_num];
 
         if relation_index != -1 {
+          // if this Parent exists then get the current position on that axis as well as the parent position
           let mut pos_num = if relation == "vert" { current_row_num + 1 } else { current_col_num + 1 };
           let parent_position = if relation == "vert" { parent_cell.vert as usize } else { parent_cell.horz as usize };
   
           while pos_num < max_pos {
+            // while still on the grid get the child index from the current grid position 
             let child_position = if relation == "vert" { grid[pos_num][current_col_num].child } else { grid[current_row_num][pos_num].child };
   
+            // if the GridCell is not that of a child then break from the loop
             if child_position == -1 {
               break;
             }
   
+            // grab the Child from parents_and_children whose index was just found
+            let child = &mut parents_and_children.1[child_position as usize];
+
+            // add the child to its Parents list of children
             parents_and_children.0[parent_position].children.push(child_position as usize);
   
+            // this ensures that both parents are properly assigned and that one is not overwritten by the other on accident
+            if relation == "vert" {
+              child.parents.0 = parent_position;
+            } else {
+              child.parents.1 = parent_position;
+            }
+
             pos_num += 1;
           }
         }
@@ -196,30 +235,23 @@ fn insert_puzzle(parents_and_children: &mut (Vec<Parents>, Vec<Children>)) {
   println!("{}", parents_and_children.1.len());
 }
 
-fn connect_children_to_parents(parents_and_children: &mut (Vec<Parents>, Vec<Children>)) {
-  for (index, parent) in parents_and_children.0.iter().enumerate() {
-    for child_index in &parent.children {
-      let child = &mut parents_and_children.1[*child_index];
-      let parents_of_child = &mut child.parents;
-      
-      // 65535 is used to ensure the first parent is vertical
-      if parents_of_child.0 == 65535 {
-        parents_of_child.0 = index;
-      } else {
-        parents_of_child.1 = index;
-      }
-
-      // sets the siblings of the child to be its parents' children that are not itself
-      child.siblings.append(&mut parent.children.clone());
-      child.siblings.retain(|e| e != child_index);
-    }
-    println!("{:?}", parent);
-  }
-
-  for child in &mut parents_and_children.1 {
+/// Parameters:
+/// - parents_and_children: A mutable reference to a tuple containing a list of Parents and Children
+///      - This variable contains all prevalent information for solving the puzzle
+///
+/// Description:
+/// - This function finds and assigns both the siblings and the possible values for each Child
+fn set_siblings_and_possible_values(parents_and_children: &mut (Vec<Parents>, Vec<Children>)) {
+  // loop through all of the Children
+  for (index, child) in parents_and_children.1.iter_mut().enumerate() {
     // Get both parents of the selected child
     let parent_1 = &parents_and_children.0[child.parents.0];
     let parent_2 = &parents_and_children.0[child.parents.1];
+
+    // sets the siblings of the child to be its parents' children that are not itself
+    child.siblings.append(&mut parent_1.children.clone());
+    child.siblings.append(&mut parent_2.children.clone());
+    child.siblings.retain(|e| e != &index);
 
     // Flattening the combinations into HashSets of unique values
     let parent_1_values: HashSet<u8> = parent_1.combinations.iter().flat_map(|v| v.iter()).cloned().collect();
@@ -240,8 +272,37 @@ fn connect_children_to_parents(parents_and_children: &mut (Vec<Parents>, Vec<Chi
 fn main() {
   let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
 
-  insert_puzzle(&mut parents_and_children);
-  get_possible_sum_combinations(&mut parents_and_children);
-  connect_children_to_parents(&mut parents_and_children);
+  insert_puzzle_and_connect_parents_and_children(&mut parents_and_children);
+  set_possible_combinations(&mut parents_and_children);
+  set_siblings_and_possible_values(&mut parents_and_children);
   println!("Hello, world!");
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn test_insert_puzzle_and_connect_parents_and_children() {
+    let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
+
+    insert_puzzle_and_connect_parents_and_children(&mut parents_and_children);
+  }
+
+  #[test]
+  fn test_set_possible_combinations() {
+    let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
+
+    insert_puzzle_and_connect_parents_and_children(&mut parents_and_children);
+    set_possible_combinations(&mut parents_and_children);
+  }
+
+  #[test]
+  fn test_set_siblings_and_possible_values() {
+    let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
+
+    insert_puzzle_and_connect_parents_and_children(&mut parents_and_children);
+    set_possible_combinations(&mut parents_and_children);
+    set_siblings_and_possible_values(&mut parents_and_children);
+  }
 }
