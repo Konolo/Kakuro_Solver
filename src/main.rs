@@ -11,6 +11,9 @@ use std::collections::{HashMap, HashSet};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
+#[cfg(test)]
+mod tests;
+
 /// * if a value is negative then that type of cell does not exist in that location
 /// * if the value is not negative, it is the index to the Parent or Children within the parents_and_children tuple
 #[derive(Debug)]
@@ -161,8 +164,8 @@ fn insert_puzzle_and_connect_parents_and_children(parents_and_children: &mut (Ve
               if index == 0 { cell.vert = length; } else { cell.horz = length; }
 
               // split the string and parse out the size component, then add a new Parent to parents_and_children
-              let sum_value: u8 = relation.split("-").next().unwrap().parse().unwrap(); 
-              parents_and_children.0.push(Parents { children: Vec::new(), sum: sum_value, value_size: relation.to_string(), combinations: Vec::new() });
+              let sum_value: u8 = relation.parse().unwrap(); 
+              parents_and_children.0.push(Parents { children: Vec::new(), sum: sum_value, value_size: "".to_string().to_string(), combinations: Vec::new() });
             }
           }
 
@@ -223,6 +226,11 @@ fn insert_puzzle_and_connect_parents_and_children(parents_and_children: &mut (Ve
 
             pos_num += 1;
           }
+
+          // calculates and set the Parents value_size 
+          let parent = &mut parents_and_children.0[parent_position];
+          parent.value_size = format!("{}-{}", parent.sum, parent.children.len());
+
         }
       }
     }
@@ -289,56 +297,8 @@ fn puzzle_setup(parents_and_children: &mut (Vec<Parents>, Vec<Children>), puzzle
 fn main() {
   let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
   let puzzle_file = "D:\\Code\\Kakuro_input.txt".to_string();
-
+  
   puzzle_setup(&mut parents_and_children, puzzle_file);
+
   println!("Hello, world!");
-}
-
-#[cfg(test)]
-mod tests {
-  use super::*;
-
-  #[test]
-  fn test_puzzle_setup_with_input_file_1() {
-    let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
-    let puzzle_file = "D:\\Code\\Kakuro_input.txt".to_string();
-
-    puzzle_setup(&mut parents_and_children, puzzle_file);
-
-    assert_eq!(parents_and_children.0.len(), 48);
-    assert_eq!(parents_and_children.1.len(), 72);
-    assert_eq!(parents_and_children.0[0], Parents { children: vec![0, 7, 15], sum: 11, value_size: "11-3".to_string(), combinations: vec![vec![1, 2, 8], vec![1, 3, 7], vec![1, 4, 6], vec![2, 3, 6], vec![2, 4, 5]] });
-  }
-
-  #[test]
-  fn test_puzzle_setup_with_input_file_2() {
-    let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
-    let puzzle_file = "D:\\Code\\Kakuro_input2.txt".to_string();
-
-    puzzle_setup(&mut parents_and_children, puzzle_file);
-  }
-
-  #[test]
-  fn test_puzzle_setup_with_input_file_3() {
-    let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
-    let puzzle_file = "D:\\Code\\Kakuro_input3.txt".to_string();
-
-    puzzle_setup(&mut parents_and_children, puzzle_file);
-  }
-
-  #[test]
-  fn test_puzzle_setup_with_input_file_4() {
-    let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
-    let puzzle_file = "D:\\Code\\Kakuro_input4.txt".to_string();
-
-    puzzle_setup(&mut parents_and_children, puzzle_file);
-  }
-
-  #[test]
-  fn test_puzzle_setup_with_input_file_5() {
-    let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
-    let puzzle_file = "D:\\Code\\Kakuro_input5.txt".to_string();
-
-    puzzle_setup(&mut parents_and_children, puzzle_file);
-  }
 }
