@@ -116,6 +116,7 @@ fn set_possible_combinations(parents_and_children: &mut (Vec<Parents>, Vec<Child
 /// Parameters:
 /// - parents_and_children: A mutable reference to a tuple containing a list of Parents and Children
 ///      - This variable contains all prevalent information for solving the puzzle
+/// - puzzle_file: A string which is the path to the file that contains the puzzle to be read in and solved
 ///
 /// Description:
 /// - This function reads in the puzzle from a file and establishes a grid which acts like a scaffold 
@@ -271,6 +272,14 @@ fn set_siblings_and_possible_values(parents_and_children: &mut (Vec<Parents>, Ve
   }
 }
 
+/// Parameters:
+/// - parents_and_children: A mutable reference to a tuple containing a list of Parents and Children
+///      - This variable contains all prevalent information for solving the puzzle
+/// - puzzle_file: A string which is the path to the file that contains the puzzle to be read in and solved
+///
+/// Description:
+/// - This function calls other functions which together set up the parents_and_children variable
+///     to the point where the puzzle can be solved
 fn puzzle_setup(parents_and_children: &mut (Vec<Parents>, Vec<Children>), puzzle_file: String) {
   insert_puzzle_and_connect_parents_and_children(parents_and_children, puzzle_file);
   set_possible_combinations(parents_and_children);
