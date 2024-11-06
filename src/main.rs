@@ -21,6 +21,7 @@ struct GridCell {
 }
 
 #[derive(Debug)]
+#[derive(PartialEq, Eq)]
 struct Parents {
   children: Vec<usize>,
   sum: u8,
@@ -29,6 +30,7 @@ struct Parents {
 }
 
 #[derive(Debug)]
+#[derive(PartialEq, Eq)]
 struct Children {
   parents: (usize, usize),
   siblings: Vec<usize>,
@@ -118,9 +120,9 @@ fn set_possible_combinations(parents_and_children: &mut (Vec<Parents>, Vec<Child
 /// Description:
 /// - This function reads in the puzzle from a file and establishes a grid which acts like a scaffold 
 ///      which allows the function to connect the parents to their children
-fn insert_puzzle_and_connect_parents_and_children(parents_and_children: &mut (Vec<Parents>, Vec<Children>)) {
+fn insert_puzzle_and_connect_parents_and_children(parents_and_children: &mut (Vec<Parents>, Vec<Children>), puzzle_file: String) {
   // Creates a file object and buffer reader
-  let file = File::open("D:\\Code\\Kakuro_input.txt").expect("Failed to open file");
+  let file = File::open(puzzle_file).expect("Failed to open file");
   let reader = BufReader::new(file);
   let mut grid: Vec<Vec<GridCell>> = Vec::new();
 
@@ -269,12 +271,17 @@ fn set_siblings_and_possible_values(parents_and_children: &mut (Vec<Parents>, Ve
   }
 }
 
+fn puzzle_setup(parents_and_children: &mut (Vec<Parents>, Vec<Children>), puzzle_file: String) {
+  insert_puzzle_and_connect_parents_and_children(parents_and_children, puzzle_file);
+  set_possible_combinations(parents_and_children);
+  set_siblings_and_possible_values(parents_and_children);
+}
+
 fn main() {
   let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
+  let puzzle_file = "D:\\Code\\Kakuro_input.txt".to_string();
 
-  insert_puzzle_and_connect_parents_and_children(&mut parents_and_children);
-  set_possible_combinations(&mut parents_and_children);
-  set_siblings_and_possible_values(&mut parents_and_children);
+  puzzle_setup(&mut parents_and_children, puzzle_file);
   println!("Hello, world!");
 }
 
@@ -283,26 +290,46 @@ mod tests {
   use super::*;
 
   #[test]
-  fn test_insert_puzzle_and_connect_parents_and_children() {
+  fn test_puzzle_setup_with_input_file_1() {
     let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
+    let puzzle_file = "D:\\Code\\Kakuro_input.txt".to_string();
 
-    insert_puzzle_and_connect_parents_and_children(&mut parents_and_children);
+    puzzle_setup(&mut parents_and_children, puzzle_file);
+
+    assert_eq!(parents_and_children.0.len(), 48);
+    assert_eq!(parents_and_children.1.len(), 72);
+    assert_eq!(parents_and_children.0[0], Parents { children: vec![0, 7, 15], sum: 11, value_size: "11-3".to_string(), combinations: vec![vec![1, 2, 8], vec![1, 3, 7], vec![1, 4, 6], vec![2, 3, 6], vec![2, 4, 5]] });
   }
 
   #[test]
-  fn test_set_possible_combinations() {
+  fn test_puzzle_setup_with_input_file_2() {
     let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
+    let puzzle_file = "D:\\Code\\Kakuro_input2.txt".to_string();
 
-    insert_puzzle_and_connect_parents_and_children(&mut parents_and_children);
-    set_possible_combinations(&mut parents_and_children);
+    puzzle_setup(&mut parents_and_children, puzzle_file);
   }
 
   #[test]
-  fn test_set_siblings_and_possible_values() {
+  fn test_puzzle_setup_with_input_file_3() {
     let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
+    let puzzle_file = "D:\\Code\\Kakuro_input3.txt".to_string();
 
-    insert_puzzle_and_connect_parents_and_children(&mut parents_and_children);
-    set_possible_combinations(&mut parents_and_children);
-    set_siblings_and_possible_values(&mut parents_and_children);
+    puzzle_setup(&mut parents_and_children, puzzle_file);
+  }
+
+  #[test]
+  fn test_puzzle_setup_with_input_file_4() {
+    let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
+    let puzzle_file = "D:\\Code\\Kakuro_input4.txt".to_string();
+
+    puzzle_setup(&mut parents_and_children, puzzle_file);
+  }
+
+  #[test]
+  fn test_puzzle_setup_with_input_file_5() {
+    let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
+    let puzzle_file = "D:\\Code\\Kakuro_input5.txt".to_string();
+
+    puzzle_setup(&mut parents_and_children, puzzle_file);
   }
 }
