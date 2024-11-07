@@ -18,9 +18,9 @@ mod tests;
 /// * if the value is not negative, it is the index to the Parent or Children within the parents_and_children tuple
 #[derive(Debug)]
 struct GridCell {
-  vert: i8,
-  horz: i8,
-  child: i8 
+  vert: i32,
+  horz: i32,
+  child: i32 
 }
 
 #[derive(Debug)]
@@ -107,7 +107,7 @@ fn set_possible_combinations(parents_and_children: &mut (Vec<Parents>, Vec<Child
       parent.combinations.push(values);
     }
 
-    println!("{:?}, {:?}", parent.value_size, parent.combinations);
+   // println!("{:?}, {:?}", parent.value_size, parent.combinations);
   }
 
 
@@ -160,7 +160,7 @@ fn insert_puzzle_and_connect_parents_and_children(parents_and_children: &mut (Ve
           for (index, relation) in [vert, horz].iter().enumerate() {
             if relation != "-" {
               // if there is a value then set the proper GridCell attribute with the positional index
-              let length = parents_and_children.0.len() as i8;
+              let length = parents_and_children.0.len() as i32;
               if index == 0 { cell.vert = length; } else { cell.horz = length; }
 
               // split the string and parse out the size component, then add a new Parent to parents_and_children
@@ -173,7 +173,7 @@ fn insert_puzzle_and_connect_parents_and_children(parents_and_children: &mut (Ve
         },
         'x' => {
           // if x then add a child cell to the end of the grid and add a new Child to parents_and_children
-          grid.last_mut().unwrap().push(GridCell { vert: -1, horz: -1, child: parents_and_children.1.len() as i8 });
+          grid.last_mut().unwrap().push(GridCell { vert: -1, horz: -1, child: parents_and_children.1.len() as i32 });
           parents_and_children.1.push(Children { parents: (0, 0), siblings: Vec::new(), value: 0, possible_values: Vec::new() });
         },
         _ => println!("ERROR"),
@@ -210,7 +210,7 @@ fn insert_puzzle_and_connect_parents_and_children(parents_and_children: &mut (Ve
             if child_position == -1 {
               break;
             }
-  
+
             // grab the Child from parents_and_children whose index was just found
             let child = &mut parents_and_children.1[child_position as usize];
 
@@ -237,13 +237,13 @@ fn insert_puzzle_and_connect_parents_and_children(parents_and_children: &mut (Ve
   }
 
   for parent in &parents_and_children.0 {
-    println!("{:?}", parent);
+    //println!("{:?}", parent);
   }
-  println!("{}", parents_and_children.0.len());
+  //println!("{}", parents_and_children.0.len());
   for child in &parents_and_children.1 {
-    println!("{:?}", child);
+    //println!("{:?}", child);
   }
-  println!("{}", parents_and_children.1.len());
+  //println!("{}", parents_and_children.1.len());
 }
 
 /// Parameters:
@@ -262,6 +262,7 @@ fn set_siblings_and_possible_values(parents_and_children: &mut (Vec<Parents>, Ve
     // sets the siblings of the child to be its parents' children that are not itself
     child.siblings.append(&mut parent_1.children.clone());
     child.siblings.append(&mut parent_2.children.clone());
+    child.siblings.sort_unstable();
     child.siblings.retain(|e| e != &index);
 
     // Flattening the combinations into HashSets of unique values
@@ -273,10 +274,11 @@ fn set_siblings_and_possible_values(parents_and_children: &mut (Vec<Parents>, Ve
 
     // Append intersection values to child.possible_values
     child.possible_values.extend(intersection_values);
+    child.possible_values.sort_unstable();
   }
 
   for child in &parents_and_children.1 {
-    println!("{:?}", child);
+    //println!("{:?}", child);
   }
 }
 
