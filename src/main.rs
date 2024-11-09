@@ -51,7 +51,7 @@ struct Children {
 ///      of combinations, and adds it to the list of possible combinations for that parent
 fn set_possible_combinations(parents_and_children: &mut (Vec<Parents>, Vec<Children>)) {
   // Creates a file object and buffer reader
-  let file = File::open("D:\\Code\\Kakuro_combinations.txt");
+  let file = File::open("combinations\\Kakuro_combinations.txt");
   let reader = BufReader::new(file.unwrap());
   let mut combinations: HashMap<String, Vec<String>> = HashMap::new();
   let mut list_of_combinations: HashSet<String> = HashSet::new();
