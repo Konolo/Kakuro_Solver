@@ -301,7 +301,7 @@ fn puzzle_setup(parents_and_children: &mut (Vec<Parents>, Vec<Children>), puzzle
 
 fn main() {
   let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
-  let puzzle_file = "D:\\Code\\Kakuro_input5.txt".to_string();
+  let puzzle_file = "puzzles\\Kakuro_input.txt".to_string();
   
   puzzle_setup(&mut parents_and_children, puzzle_file);
 

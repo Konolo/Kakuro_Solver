@@ -1,0 +1,20 @@
+--\\-\\--\\\-- 15\- 8\- 3\- 9\- 29\- 16\- 11\-
+-\xx\xx\\xxx\\ 23\3 3\4 25\- -\23 28\- 24\-
+\xxxxxxx\xxxxx -\29 30\34
+\xxxx\\xxx\xxx -\12 12\- 8\19 4\10
+\xx\\xxxxxx\xx -\12 17\- 45\21 3\10
+-\xxxxxxx\xxx\ -\42 7\7 3\-
+-\\xxx\xxx\xxx 10\- 29\17 23\23 45\6
+\xx\xxx\\xx\xx -\11 23\8 13\- 38\4 16\6
+\xxxx\xxx\xxx- -\30 4\13 -\10
+\xxxxxxxx\xx\- -\36 4\11 11\-
+-\xxxxx\xxxxx\ -\15 3\15 7\-
+--\xx\xxxxxxxx 32\17 -\44
+-\xxx\xxx\xxxx 4\7 16\9 12\10
+\xx\xx\\xxx\xx -\3 13\17 12\- 15\12 16\4
+\xxx\xxx\xxx\- -\8 16\10 12\23 20\-
+-\xxx\xxxxxxx\ 15\24 11\28 6\-
+\xx\xxxxxx\\xx -\17 7\28 4\- 9\7
+\xxx\xxx\\xxxx -\8 4\7 16\- 9\10
+\xxxxx\xxxxxxx -\16 -\28
+--\xxx-\xx\xx- -\9 -\17 -\4

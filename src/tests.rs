@@ -7,7 +7,7 @@ mod tests {
   #[test]
   fn test_puzzle_setup_with_input_file_1() {
     let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
-    let puzzle_file = "D:\\Code\\Kakuro_input.txt".to_string();
+    let puzzle_file = "puzzles\\Kakuro_input.txt".to_string();
 
     puzzle_setup(&mut parents_and_children, puzzle_file);
 
@@ -143,7 +143,7 @@ mod tests {
   #[test]
   fn test_puzzle_setup_with_input_file_2() {
     let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
-    let puzzle_file = "D:\\Code\\Kakuro_input2.txt".to_string();
+    let puzzle_file = "puzzles\\Kakuro_input2.txt".to_string();
 
     puzzle_setup(&mut parents_and_children, puzzle_file);
 
@@ -322,7 +322,7 @@ mod tests {
   #[test]
   fn test_puzzle_setup_with_input_file_3() {
     let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
-    let puzzle_file = "D:\\Code\\Kakuro_input3.txt".to_string();
+    let puzzle_file = "puzzles\\Kakuro_input3.txt".to_string();
 
     puzzle_setup(&mut parents_and_children, puzzle_file);
 
@@ -506,7 +506,7 @@ mod tests {
   #[test]
   fn test_puzzle_setup_with_input_file_4() {
     let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
-    let puzzle_file = "D:\\Code\\Kakuro_input4.txt".to_string();
+    let puzzle_file = "puzzles\\Kakuro_input4.txt".to_string();
 
     puzzle_setup(&mut parents_and_children, puzzle_file);
 
@@ -711,7 +711,7 @@ mod tests {
   #[test]
   fn test_puzzle_setup_with_input_file_5() {
     let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
-    let puzzle_file = "D:\\Code\\Kakuro_input5.txt".to_string();
+    let puzzle_file = "puzzles\\Kakuro_input5.txt".to_string();
 
     puzzle_setup(&mut parents_and_children, puzzle_file);
 
