@@ -3,6 +3,7 @@
 * Author: Matthew Jacobs
 * Created: July 2024
 * Updated: November 2nd, 2024
+* Copyright: Matthew Jacobs
 * Version: 0.1.0
 *
 */
@@ -111,9 +112,9 @@ fn set_possible_combinations(parents_and_children: &mut (Vec<Parents>, Vec<Child
   }
 
 
-  for combo in combinations {
+  //for combo in combinations {
     //println!("{:?}, {:?}", combo.0, combo.1);
-  }
+  //}
 }
 
 /// Parameters:
@@ -176,7 +177,7 @@ fn insert_puzzle_and_connect_parents_and_children(parents_and_children: &mut (Ve
           grid.last_mut().unwrap().push(GridCell { vert: -1, horz: -1, child: parents_and_children.1.len() as i32 });
           parents_and_children.1.push(Children { parents: (0, 0), siblings: Vec::new(), value: 0, possible_values: Vec::new() });
         },
-        _ => println!("ERROR"),
+        _ => panic!("Invalid character"),
       }
     }
   }
@@ -236,13 +237,13 @@ fn insert_puzzle_and_connect_parents_and_children(parents_and_children: &mut (Ve
     }
   }
 
-  for parent in &parents_and_children.0 {
+  //for parent in &parents_and_children.0 {
     //println!("{:?}", parent);
-  }
+  //}
   //println!("{}", parents_and_children.0.len());
-  for child in &parents_and_children.1 {
+  //for child in &parents_and_children.1 {
     //println!("{:?}", child);
-  }
+  //}
   //println!("{}", parents_and_children.1.len());
 }
 
@@ -265,7 +266,7 @@ fn set_siblings_and_possible_values(parents_and_children: &mut (Vec<Parents>, Ve
     child.siblings.sort_unstable();
     child.siblings.retain(|e| e != &index);
 
-    println!("{:?} + {:?} = {:?}", parent_1.children, parent_2.children, child.siblings);
+    //println!("{:?} + {:?} = {:?}", parent_1.children, parent_2.children, child.siblings);
 
     // Flattening the combinations into HashSets of unique values
     let parent_1_values: HashSet<u8> = parent_1.combinations.iter().flat_map(|v| v.iter()).cloned().collect();
@@ -279,9 +280,9 @@ fn set_siblings_and_possible_values(parents_and_children: &mut (Vec<Parents>, Ve
     child.possible_values.sort_unstable();
   }
 
-  for child in &parents_and_children.1 {
+  //for child in &parents_and_children.1 {
     //println!("{}", child);
-  }
+  //}
 }
 
 /// Parameters:
@@ -304,5 +305,5 @@ fn main() {
   
   puzzle_setup(&mut parents_and_children, puzzle_file);
 
-  println!("Hello, world!");
+  println!("Success");
 }
