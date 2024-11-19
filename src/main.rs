@@ -107,14 +107,7 @@ fn set_possible_combinations(parents_and_children: &mut (Vec<Parents>, Vec<Child
 
       parent.combinations.push(values);
     }
-
-   // println!("{:?}, {:?}", parent.value_size, parent.combinations);
   }
-
-
-  //for combo in combinations {
-    //println!("{:?}, {:?}", combo.0, combo.1);
-  //}
 }
 
 /// Parameters:
@@ -236,15 +229,6 @@ fn insert_puzzle_and_connect_parents_and_children(parents_and_children: &mut (Ve
       }
     }
   }
-
-  //for parent in &parents_and_children.0 {
-    //println!("{:?}", parent);
-  //}
-  //println!("{}", parents_and_children.0.len());
-  //for child in &parents_and_children.1 {
-    //println!("{:?}", child);
-  //}
-  //println!("{}", parents_and_children.1.len());
 }
 
 /// Parameters:
@@ -266,8 +250,6 @@ fn set_siblings_and_possible_values(parents_and_children: &mut (Vec<Parents>, Ve
     child.siblings.sort_unstable();
     child.siblings.retain(|e| e != &index);
 
-    //println!("{:?} + {:?} = {:?}", parent_1.children, parent_2.children, child.siblings);
-
     // Flattening the combinations into HashSets of unique values
     let parent_1_values: HashSet<u8> = parent_1.combinations.iter().flat_map(|v| v.iter()).cloned().collect();
     let parent_2_values: HashSet<u8> = parent_2.combinations.iter().flat_map(|v| v.iter()).cloned().collect();
@@ -279,10 +261,6 @@ fn set_siblings_and_possible_values(parents_and_children: &mut (Vec<Parents>, Ve
     child.possible_values.extend(intersection_values);
     child.possible_values.sort_unstable();
   }
-
-  //for child in &parents_and_children.1 {
-    //println!("{}", child);
-  //}
 }
 
 /// Parameters:
