@@ -1,6 +1,9 @@
 #[cfg(test)]
 mod tests {
+  use std::collections::VecDeque;
+
   use crate::puzzle_setup;
+  use crate::starting_discovered_values;
   use crate::Parents;
   use crate::Children;
 
@@ -71,8 +74,8 @@ mod tests {
     assert_eq!(children[2], Children { parents: (2, 7), siblings: vec![0, 1, 9, 16, 22, 29], value: 0, possible_values: vec![1, 2, 4] });
     assert_eq!(children[3], Children { parents: (3, 8), siblings: vec![4, 5, 10, 18, 24, 30], value: 0, possible_values: vec![1, 2, 4] });
     assert_eq!(children[4], Children { parents: (4, 8), siblings: vec![3, 5, 11], value: 0, possible_values: vec![2, 4] });
-    assert_eq!(children[5], Children { parents: (5, 8), siblings: vec![3, 4, 12, 19], value: 0, possible_values: vec![4] });
-    assert_eq!(children[6], Children { parents: (6, 10), siblings: vec![7, 8, 9, 14], value: 0, possible_values: vec![5] });
+    assert_eq!(children[5], Children { parents: (5, 8), siblings: vec![3, 4, 12, 19], value: 4, possible_values: vec![4] });
+    assert_eq!(children[6], Children { parents: (6, 10), siblings: vec![7, 8, 9, 14], value: 5, possible_values: vec![5] });
     assert_eq!(children[7], Children { parents: (0, 10), siblings: vec![0, 6, 8, 9, 15], value: 0, possible_values: vec![1, 2, 3, 5] });
     assert_eq!(children[8], Children { parents: (1, 10), siblings: vec![1, 6, 7, 9], value: 0, possible_values: vec![1, 2] });
     assert_eq!(children[9], Children { parents: (2, 10), siblings: vec![2, 6, 7, 8, 16, 22, 29], value: 0, possible_values: vec![1, 2, 3, 5] });
@@ -80,14 +83,14 @@ mod tests {
     assert_eq!(children[11], Children { parents: (4, 12), siblings: vec![4, 10, 12, 13], value: 0, possible_values: vec![3, 4, 5, 6, 7, 8, 9] });
     assert_eq!(children[12], Children { parents: (5, 12), siblings: vec![5, 10, 11, 13, 19], value: 0, possible_values: vec![3, 4, 5, 6, 7, 8, 9] });
     assert_eq!(children[13], Children { parents: (9, 12), siblings: vec![10, 11, 12, 20], value: 0, possible_values: vec![6, 7, 8, 9] });
-    assert_eq!(children[14], Children { parents: (6, 13), siblings: vec![6, 15], value: 0, possible_values: vec![9] });
-    assert_eq!(children[15], Children { parents: (0, 13), siblings: vec![0, 7, 14], value: 0, possible_values: vec![7] });
+    assert_eq!(children[14], Children { parents: (6, 13), siblings: vec![6, 15], value: 9, possible_values: vec![9] });
+    assert_eq!(children[15], Children { parents: (0, 13), siblings: vec![0, 7, 14], value: 7, possible_values: vec![7] });
     assert_eq!(children[16], Children { parents: (2, 15), siblings: vec![2, 9, 17, 18, 22, 29], value: 0, possible_values: vec![1, 2, 4] });
     assert_eq!(children[17], Children { parents: (11, 15), siblings: vec![16, 18, 23], value: 0, possible_values: vec![1, 2] });
     assert_eq!(children[18], Children { parents: (3, 15), siblings: vec![3, 10, 16, 17, 24, 30], value: 0, possible_values: vec![1, 2, 4] });
     assert_eq!(children[19], Children { parents: (5, 17), siblings: vec![5, 12, 20], value: 0, possible_values: vec![7, 9] });
     assert_eq!(children[20], Children { parents: (9, 17), siblings: vec![13, 19], value: 0, possible_values: vec![7, 9] });
-    assert_eq!(children[21], Children { parents: (14, 20), siblings: vec![22, 23, 24, 25, 28], value: 0, possible_values: vec![8] });
+    assert_eq!(children[21], Children { parents: (14, 20), siblings: vec![22, 23, 24, 25, 28], value: 8, possible_values: vec![8] });
     assert_eq!(children[22], Children { parents: (2, 20), siblings: vec![2, 9, 16, 21, 23, 24, 25, 29], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6, 7] });
     assert_eq!(children[23], Children { parents: (11, 20), siblings: vec![17, 21, 22, 24, 25], value: 0, possible_values: vec![1, 2] });
     assert_eq!(children[24], Children { parents: (3, 20), siblings: vec![3, 10, 18, 21, 22, 23, 25, 30], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6, 7] });
@@ -101,7 +104,7 @@ mod tests {
     assert_eq!(children[32], Children { parents: (21, 24), siblings: vec![30, 31, 33, 36, 44], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6, 7, 8, 9] });
     assert_eq!(children[33], Children { parents: (22, 24), siblings: vec![30, 31, 32, 37, 45], value: 0, possible_values: vec![1, 2, 4] });
     assert_eq!(children[34], Children { parents: (18, 25), siblings: vec![26, 35, 38], value: 0, possible_values: vec![7, 9] });
-    assert_eq!(children[35], Children { parents: (19, 25), siblings: vec![27, 34, 39], value: 0, possible_values: vec![9] });
+    assert_eq!(children[35], Children { parents: (19, 25), siblings: vec![27, 34, 39], value: 9, possible_values: vec![9] });
     assert_eq!(children[36], Children { parents: (21, 30), siblings: vec![32, 37, 44], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6, 7, 8] });
     assert_eq!(children[37], Children { parents: (22, 30), siblings: vec![33, 36, 45], value: 0, possible_values: vec![1, 2, 4] });
     assert_eq!(children[38], Children { parents: (18, 31), siblings: vec![26, 34, 39, 40, 41], value: 0, possible_values: vec![7, 8, 9] });
@@ -118,12 +121,12 @@ mod tests {
     assert_eq!(children[49], Children { parents: (28, 36), siblings: vec![42, 46, 47, 48, 50, 55, 62, 69], value: 0, possible_values: vec![1, 2, 3, 4, 6] });
     assert_eq!(children[50], Children { parents: (29, 36), siblings: vec![43, 46, 47, 48, 49], value: 0, possible_values: vec![1, 2, 3, 4] });
     assert_eq!(children[51], Children { parents: (34, 39), siblings: vec![52, 58], value: 0, possible_values: vec![7, 9] });
-    assert_eq!(children[52], Children { parents: (35, 39), siblings: vec![51, 59, 66], value: 0, possible_values: vec![9] });
+    assert_eq!(children[52], Children { parents: (35, 39), siblings: vec![51, 59, 66], value: 9, possible_values: vec![9] });
     assert_eq!(children[53], Children { parents: (27, 41), siblings: vec![41, 47, 54, 55, 61, 68], value: 0, possible_values: vec![6, 8, 9] });
     assert_eq!(children[54], Children { parents: (32, 41), siblings: vec![48, 53, 55], value: 0, possible_values: vec![8, 9] });
-    assert_eq!(children[55], Children { parents: (28, 41), siblings: vec![42, 49, 53, 54, 62, 69], value: 0, possible_values: vec![6] });
+    assert_eq!(children[55], Children { parents: (28, 41), siblings: vec![42, 49, 53, 54, 62, 69], value: 6, possible_values: vec![6] });
     assert_eq!(children[56], Children { parents: (37, 43), siblings: vec![57, 64, 71], value: 0, possible_values: vec![1, 2, 4, 5] });
-    assert_eq!(children[57], Children { parents: (38, 43), siblings: vec![56, 65], value: 0, possible_values: vec![1] });
+    assert_eq!(children[57], Children { parents: (38, 43), siblings: vec![56, 65], value: 1, possible_values: vec![1] });
     assert_eq!(children[58], Children { parents: (34, 44), siblings: vec![51, 59, 60, 61], value: 0, possible_values: vec![6, 7, 8, 9] });
     assert_eq!(children[59], Children { parents: (35, 44), siblings: vec![52, 58, 60, 61, 66], value: 0, possible_values: vec![6, 8, 9] });
     assert_eq!(children[60], Children { parents: (40, 44), siblings: vec![58, 59, 61, 67], value: 0, possible_values: vec![6, 7] });
@@ -221,7 +224,7 @@ mod tests {
     assert_eq!(parents[65], Parents { children: vec![95, 96], sum: 16, value_size: "16-2".to_string(), combinations: vec![vec![7, 9]] });
   
     assert_eq!(children[0], Children { parents: (0, 5), siblings: vec![1, 5, 14, 22], value: 0, possible_values: vec![1, 3] });
-    assert_eq!(children[1], Children { parents: (1, 5), siblings: vec![0, 6], value: 0, possible_values: vec![3] });
+    assert_eq!(children[1], Children { parents: (1, 5), siblings: vec![0, 6], value: 3, possible_values: vec![3] });
     assert_eq!(children[2], Children { parents: (2, 8), siblings: vec![3, 9], value: 0, possible_values: vec![1, 2] });
     assert_eq!(children[3], Children { parents: (3, 8), siblings: vec![2, 10, 18], value: 0, possible_values: vec![1, 2, 3, 4] });
     assert_eq!(children[4], Children { parents: (4, 11), siblings: vec![5, 6, 7, 13], value: 0, possible_values: vec![8, 9] });
@@ -231,8 +234,8 @@ mod tests {
     assert_eq!(children[8], Children { parents: (7, 13), siblings: vec![9, 10, 17, 25], value: 0, possible_values: vec![1, 2] });
     assert_eq!(children[9], Children { parents: (2, 13), siblings: vec![2, 8, 10], value: 0, possible_values: vec![1, 2] });
     assert_eq!(children[10], Children { parents: (3, 13), siblings: vec![3, 8, 9, 18], value: 0, possible_values: vec![1, 2, 4] });
-    assert_eq!(children[11], Children { parents: (9, 15), siblings: vec![12, 20, 28], value: 0, possible_values: vec![7] });
-    assert_eq!(children[12], Children { parents: (10, 15), siblings: vec![11, 21, 29], value: 0, possible_values: vec![9] });
+    assert_eq!(children[11], Children { parents: (9, 15), siblings: vec![12, 20, 28], value: 7, possible_values: vec![7] });
+    assert_eq!(children[12], Children { parents: (10, 15), siblings: vec![11, 21, 29], value: 9, possible_values: vec![9] });
     assert_eq!(children[13], Children { parents: (4, 16), siblings: vec![4, 14], value: 0, possible_values: vec![8, 9] });
     assert_eq!(children[14], Children { parents: (0, 16), siblings: vec![0, 5, 13, 22], value: 0, possible_values: vec![3, 4, 5, 7] });
     assert_eq!(children[15], Children { parents: (6, 18), siblings: vec![7, 16, 17], value: 0, possible_values: vec![4, 5, 6, 7] });
@@ -241,7 +244,7 @@ mod tests {
     assert_eq!(children[18], Children { parents: (3, 20), siblings: vec![3, 10, 19, 20, 21], value: 0, possible_values: vec![1, 2, 3, 4, 5] });
     assert_eq!(children[19], Children { parents: (14, 20), siblings: vec![18, 20, 21, 27, 34, 41], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6] });
     assert_eq!(children[20], Children { parents: (9, 20), siblings: vec![11, 18, 19, 21, 28], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6] });
-    assert_eq!(children[21], Children { parents: (10, 20), siblings: vec![12, 18, 19, 20, 29], value: 0, possible_values: vec![6] });
+    assert_eq!(children[21], Children { parents: (10, 20), siblings: vec![12, 18, 19, 20, 29], value: 6, possible_values: vec![6] });
     assert_eq!(children[22], Children { parents: (0, 21), siblings: vec![0, 5, 14, 23], value: 0, possible_values: vec![1, 2, 3, 4, 6, 7] });
     assert_eq!(children[23], Children { parents: (17, 21), siblings: vec![22, 30, 36], value: 0, possible_values: vec![7, 8, 9] });
     assert_eq!(children[24], Children { parents: (12, 23), siblings: vec![16, 25, 26], value: 0, possible_values: vec![1, 2] });
@@ -255,14 +258,14 @@ mod tests {
     assert_eq!(children[32], Children { parents: (19, 29), siblings: vec![26, 33, 34, 39, 49], value: 0, possible_values: vec![6, 8, 9] });
     assert_eq!(children[33], Children { parents: (24, 29), siblings: vec![32, 34, 40, 50, 59, 65], value: 0, possible_values: vec![6, 8, 9] });
     assert_eq!(children[34], Children { parents: (14, 29), siblings: vec![19, 27, 32, 33, 41], value: 0, possible_values: vec![6, 8, 9] });
-    assert_eq!(children[35], Children { parents: (26, 33), siblings: vec![36, 37, 45, 54], value: 0, possible_values: vec![6] });
+    assert_eq!(children[35], Children { parents: (26, 33), siblings: vec![36, 37, 45, 54], value: 6, possible_values: vec![6] });
     assert_eq!(children[36], Children { parents: (17, 33), siblings: vec![23, 30, 35, 37], value: 0, possible_values: vec![8, 9] });
     assert_eq!(children[37], Children { parents: (22, 33), siblings: vec![31, 35, 36, 46, 56, 63], value: 0, possible_values: vec![6, 8, 9] });
     assert_eq!(children[38], Children { parents: (28, 35), siblings: vec![39, 40, 41, 42, 43, 48, 58], value: 0, possible_values: vec![7, 8, 9] });
     assert_eq!(children[39], Children { parents: (19, 35), siblings: vec![26, 32, 38, 40, 41, 42, 43, 49], value: 0, possible_values: vec![6, 7, 8, 9] });
     assert_eq!(children[40], Children { parents: (24, 35), siblings: vec![33, 38, 39, 41, 42, 43, 50, 59, 65], value: 0, possible_values: vec![4, 5, 6, 7, 8, 9] });
     assert_eq!(children[41], Children { parents: (14, 35), siblings: vec![19, 27, 34, 38, 39, 40, 42, 43], value: 0, possible_values: vec![4, 5, 6, 7, 8, 9] });
-    assert_eq!(children[42], Children { parents: (30, 35), siblings: vec![38, 39, 40, 41, 43, 51, 61], value: 0, possible_values: vec![4] });
+    assert_eq!(children[42], Children { parents: (30, 35), siblings: vec![38, 39, 40, 41, 43, 51, 61], value: 4, possible_values: vec![4] });
     assert_eq!(children[43], Children { parents: (31, 35), siblings: vec![38, 39, 40, 41, 42, 52], value: 0, possible_values: vec![7, 9] });
     assert_eq!(children[44], Children { parents: (32, 36), siblings: vec![45, 53], value: 0, possible_values: vec![7, 9] });
     assert_eq!(children[45], Children { parents: (26, 36), siblings: vec![35, 44, 54], value: 0, possible_values: vec![2, 3, 4, 5, 6] });
@@ -272,7 +275,7 @@ mod tests {
     assert_eq!(children[49], Children { parents: (19, 38), siblings: vec![26, 32, 39, 46, 47, 48, 50], value: 0, possible_values: vec![6, 7, 8, 9] });
     assert_eq!(children[50], Children { parents: (24, 38), siblings: vec![33, 40, 46, 47, 48, 49, 59, 65], value: 0, possible_values: vec![5, 6, 7, 8, 9] });
     assert_eq!(children[51], Children { parents: (30, 40), siblings: vec![42, 52, 61], value: 0, possible_values: vec![1, 2, 4] });
-    assert_eq!(children[52], Children { parents: (31, 40), siblings: vec![43, 51], value: 0, possible_values: vec![7] });
+    assert_eq!(children[52], Children { parents: (31, 40), siblings: vec![43, 51], value: 7, possible_values: vec![7] });
     assert_eq!(children[53], Children { parents: (32, 41), siblings: vec![44, 54, 55, 56, 57, 58], value: 0, possible_values: vec![7, 9] });
     assert_eq!(children[54], Children { parents: (26, 41), siblings: vec![35, 45, 53, 55, 56, 57, 58], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6] });
     assert_eq!(children[55], Children { parents: (37, 41), siblings: vec![53, 54, 56, 57, 58, 62, 69, 77], value: 0, possible_values: vec![1, 2, 3, 5] });
@@ -283,7 +286,7 @@ mod tests {
     assert_eq!(children[60], Children { parents: (39, 42), siblings: vec![59, 61, 66, 73], value: 0, possible_values: vec![1, 2] });
     assert_eq!(children[61], Children { parents: (30, 42), siblings: vec![42, 51, 59, 60], value: 0, possible_values: vec![1, 2] });
     assert_eq!(children[62], Children { parents: (37, 45), siblings: vec![55, 63, 64, 69, 77], value: 0, possible_values: vec![1, 2]});
-    assert_eq!(children[63], Children { parents: (22, 45), siblings: vec![31, 37, 46, 56, 62, 64], value: 0, possible_values: vec![4] });
+    assert_eq!(children[63], Children { parents: (22, 45), siblings: vec![31, 37, 46, 56, 62, 64], value: 4, possible_values: vec![4] });
     assert_eq!(children[64], Children { parents: (34, 45), siblings: vec![47, 57, 62, 63, 70], value: 0, possible_values: vec![1, 2, 4] });
     assert_eq!(children[65], Children { parents: (24, 48), siblings: vec![33, 40, 50, 59, 66], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6] });
     assert_eq!(children[66], Children { parents: (39, 48), siblings: vec![60, 65, 73], value: 0, possible_values: vec![1, 2, 4] });
@@ -297,24 +300,24 @@ mod tests {
     assert_eq!(children[74], Children { parents: (49, 54), siblings: vec![73, 82, 91, 96], value: 0, possible_values: vec![5, 7, 8, 9] });
     assert_eq!(children[75], Children { parents: (43, 56), siblings: vec![67, 76, 77, 78, 84], value: 0, possible_values: vec![8, 9] });
     assert_eq!(children[76], Children { parents: (44, 56), siblings: vec![68, 75, 77, 78, 85], value: 0, possible_values: vec![5, 7, 8, 9] });
-    assert_eq!(children[77], Children { parents: (37, 56), siblings: vec![55, 62, 69, 75, 76, 78], value: 0, possible_values: vec![5] });
+    assert_eq!(children[77], Children { parents: (37, 56), siblings: vec![55, 62, 69, 75, 76, 78], value: 5, possible_values: vec![5] });
     assert_eq!(children[78], Children { parents: (51, 56), siblings: vec![75, 76, 77, 86, 93], value: 0, possible_values: vec![7, 8, 9] });
     assert_eq!(children[79], Children { parents: (46, 58), siblings: vec![71, 80, 81, 88], value: 0, possible_values: vec![7, 8] });
     assert_eq!(children[80], Children { parents: (47, 58), siblings: vec![72, 79, 81], value: 0, possible_values: vec![8, 9] });
     assert_eq!(children[81], Children { parents: (53, 58), siblings: vec![79, 80, 89], value: 0, possible_values: vec![7, 8] });
     assert_eq!(children[82], Children { parents: (49, 60), siblings: vec![74, 83, 91, 96], value: 0, possible_values: vec![8, 9] });
     assert_eq!(children[83], Children { parents: (55, 60), siblings: vec![82, 92], value: 0, possible_values: vec![8, 9] });
-    assert_eq!(children[84], Children { parents: (43, 61), siblings: vec![67, 75, 85], value: 0, possible_values: vec![6] });
+    assert_eq!(children[84], Children { parents: (43, 61), siblings: vec![67, 75, 85], value: 6, possible_values: vec![6] });
     assert_eq!(children[85], Children { parents: (44, 61), siblings: vec![68, 76, 84], value: 0, possible_values: vec![1, 2, 3, 5, 6, 7] });
     assert_eq!(children[86], Children { parents: (51, 62), siblings: vec![78, 87, 88, 93], value: 0, possible_values: vec![7, 8] });
     assert_eq!(children[87], Children { parents: (57, 62), siblings: vec![86, 88, 94], value: 0, possible_values: vec![1, 3] });
     assert_eq!(children[88], Children { parents: (46, 62), siblings: vec![71, 79, 86, 87], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6, 7, 8] });
     assert_eq!(children[89], Children { parents: (53, 63), siblings: vec![81, 90, 91, 92], value: 0, possible_values: vec![1, 2, 3, 5] });
     assert_eq!(children[90], Children { parents: (59, 63), siblings: vec![89, 91, 92, 95], value: 0, possible_values: vec![1, 2, 3] });
-    assert_eq!(children[91], Children { parents: (49, 63), siblings: vec![74, 82, 89, 90, 92, 96], value: 0, possible_values: vec![5] });
+    assert_eq!(children[91], Children { parents: (49, 63), siblings: vec![74, 82, 89, 90, 92, 96], value: 5, possible_values: vec![5] });
     assert_eq!(children[92], Children { parents: (55, 63), siblings: vec![83, 89, 90, 91], value: 0, possible_values: vec![2, 3, 5] });
     assert_eq!(children[93], Children { parents: (51, 64), siblings: vec![78, 86, 94], value: 0, possible_values: vec![7, 8, 9] });
-    assert_eq!(children[94], Children { parents: (57, 64), siblings: vec![87, 93], value: 0, possible_values: vec![3] });
+    assert_eq!(children[94], Children { parents: (57, 64), siblings: vec![87, 93], value: 3, possible_values: vec![3] });
     assert_eq!(children[95], Children { parents: (59, 65), siblings: vec![90, 96], value: 0, possible_values: vec![7, 9] });
     assert_eq!(children[96], Children { parents: (49, 65), siblings: vec![74, 82, 91, 95], value: 0, possible_values: vec![7, 9] });
   }
@@ -389,7 +392,7 @@ mod tests {
     assert_eq!(parents[54], Parents { children: vec![104, 105, 106, 107], sum: 17, value_size: "17-4".to_string(), combinations: vec![vec![1, 2, 5, 9], vec![1, 2, 6, 8], vec![1, 3, 4, 9], vec![1, 3, 5, 8], vec![1, 3, 6, 7], vec![1, 4, 5, 7], vec![2, 3, 4, 8], vec![2, 3, 5, 7], vec![2, 4, 5, 6]] });
     assert_eq!(parents[55], Parents { children: vec![108, 109, 110, 111], sum: 18, value_size: "18-4".to_string(), combinations: vec![vec![1, 2, 6, 9], vec![1, 2, 7, 8], vec![1, 3, 5, 9], vec![1, 3, 6, 8], vec![1, 4, 5, 8], vec![1, 4, 6, 7], vec![2, 3, 4, 9], vec![2, 3, 5, 8], vec![2, 3, 6, 7], vec![2, 4, 5, 7], vec![3, 4, 5, 6]] });
   
-    assert_eq!(children[0], Children { parents: (0, 9), siblings: vec![1, 2, 3, 9, 19, 28, 37, 46], value: 0, possible_values: vec![3] });
+    assert_eq!(children[0], Children { parents: (0, 9), siblings: vec![1, 2, 3, 9, 19, 28, 37, 46], value: 3, possible_values: vec![3] });
     assert_eq!(children[1], Children { parents: (1, 9), siblings: vec![0, 2, 3, 10], value: 0, possible_values: vec![1, 2, 3] });
     assert_eq!(children[2], Children { parents: (2, 9), siblings: vec![0, 1, 3, 11, 20], value: 0, possible_values: vec![1, 2, 3, 4] });
     assert_eq!(children[3], Children { parents: (3, 9), siblings: vec![0, 1, 2, 12, 21, 30, 40, 49], value: 0, possible_values: vec![1, 2, 3, 4] });
@@ -416,7 +419,7 @@ mod tests {
     assert_eq!(children[24], Children { parents: (5, 17), siblings: vec![5, 14, 20, 21, 22, 23], value: 0, possible_values: vec![6, 7, 8, 9] });
     assert_eq!(children[25], Children { parents: (7, 19), siblings: vec![7, 16, 26, 34, 44, 53], value: 0, possible_values: vec![6, 7, 8, 9] });
     assert_eq!(children[26], Children { parents: (11, 19), siblings: vec![17, 25, 35, 45], value: 0, possible_values: vec![7, 8, 9] });
-    assert_eq!(children[27], Children { parents: (8, 20), siblings: vec![8, 18, 28, 29, 36], value: 0, possible_values: vec![5] });
+    assert_eq!(children[27], Children { parents: (8, 20), siblings: vec![8, 18, 28, 29, 36], value: 5, possible_values: vec![5] });
     assert_eq!(children[28], Children { parents: (0, 20), siblings: vec![0, 9, 19, 27, 29, 37, 46], value: 0, possible_values: vec![5, 6, 7, 8, 9] });
     assert_eq!(children[29], Children { parents: (16, 20), siblings: vec![27, 28, 38, 47, 54, 59, 68, 78], value: 0, possible_values: vec![5, 6, 8] });
     assert_eq!(children[30], Children { parents: (3, 22), siblings: vec![3, 12, 21, 31, 32, 40, 49], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6, 7, 8] });
@@ -445,7 +448,7 @@ mod tests {
     assert_eq!(children[53], Children { parents: (7, 28), siblings: vec![7, 16, 25, 34, 44, 50, 51, 52], value: 0, possible_values: vec![2, 3, 4, 5, 6, 7, 8, 9] });
     assert_eq!(children[54], Children { parents: (16, 30), siblings: vec![29, 38, 47, 55, 59, 68, 78], value: 0, possible_values: vec![1, 2, 3, 5, 6] });
     assert_eq!(children[55], Children { parents: (21, 30), siblings: vec![39, 48, 54, 60, 69], value: 0, possible_values: vec![6, 7] });
-    assert_eq!(children[56], Children { parents: (23, 33), siblings: vec![42, 51, 57, 63, 72], value: 0, possible_values: vec![6] });
+    assert_eq!(children[56], Children { parents: (23, 33), siblings: vec![42, 51, 57, 63, 72], value: 6, possible_values: vec![6] });
     assert_eq!(children[57], Children { parents: (18, 33), siblings: vec![33, 43, 52, 56, 64, 73, 82], value: 0, possible_values: vec![5, 6, 8, 9] });
     assert_eq!(children[58], Children { parents: (29, 36), siblings: vec![59, 60, 61, 67, 77, 86, 95, 104], value: 0, possible_values: vec![3, 5, 6] });
     assert_eq!(children[59], Children { parents: (16, 36), siblings: vec![29, 38, 47, 54, 58, 60, 61, 68, 78], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6] });
@@ -468,7 +471,7 @@ mod tests {
     assert_eq!(children[76], Children { parents: (35, 42), siblings: vec![66, 77, 78, 85, 94], value: 0, possible_values: vec![5, 6, 7, 8, 9] });
     assert_eq!(children[77], Children { parents: (29, 42), siblings: vec![58, 67, 76, 78, 86, 95, 104], value: 0, possible_values: vec![5, 6, 7, 8, 9] });
     assert_eq!(children[78], Children { parents: (16, 42), siblings: vec![29, 38, 47, 54, 59, 68, 76, 77], value: 0, possible_values: vec![5, 6, 8] });
-    assert_eq!(children[79], Children { parents: (31, 44), siblings: vec![61, 70, 80, 81, 88, 98, 107], value: 0, possible_values: vec![6] });
+    assert_eq!(children[79], Children { parents: (31, 44), siblings: vec![61, 70, 80, 81, 88, 98, 107], value: 6, possible_values: vec![6] });
     assert_eq!(children[80], Children { parents: (40, 44), siblings: vec![79, 81, 89], value: 0, possible_values: vec![6, 8, 9] });
     assert_eq!(children[81], Children { parents: (32, 44), siblings: vec![62, 71, 79, 80, 90, 99, 108], value: 0, possible_values: vec![6, 8, 9] });
     assert_eq!(children[82], Children { parents: (18, 46), siblings: vec![33, 43, 52, 57, 64, 73, 83, 84], value: 0, possible_values: vec![2, 4] });
@@ -599,9 +602,9 @@ mod tests {
     assert_eq!(children[11], Children { parents: (9, 14), siblings: vec![12, 13, 14, 15, 21, 30], value: 0, possible_values: vec![3, 4, 6] });
     assert_eq!(children[12], Children { parents: (3, 14), siblings: vec![3, 11, 13, 14, 15, 22, 31, 37], value: 0, possible_values: vec![1, 2, 3, 4, 6] });
     assert_eq!(children[13], Children { parents: (4, 14), siblings: vec![4, 11, 12, 14, 15, 23, 32, 38, 46, 54], value: 0, possible_values: vec![1, 2, 3, 4, 6] });
-    assert_eq!(children[14], Children { parents: (5, 14), siblings: vec![5, 11, 12, 13, 15, 24], value: 0, possible_values: vec![6] });
+    assert_eq!(children[14], Children { parents: (5, 14), siblings: vec![5, 11, 12, 13, 15, 24], value: 6, possible_values: vec![6] });
     assert_eq!(children[15], Children { parents: (6, 14), siblings: vec![6, 11, 12, 13, 14], value: 0, possible_values: vec![1, 2, 4] });
-    assert_eq!(children[16], Children { parents: (11, 15), siblings: vec![17, 18, 25], value: 0, possible_values: vec![6] });
+    assert_eq!(children[16], Children { parents: (11, 15), siblings: vec![17, 18, 25], value: 6, possible_values: vec![6] });
     assert_eq!(children[17], Children { parents: (7, 15), siblings: vec![7, 16, 18, 26], value: 0, possible_values: vec![2, 3, 4, 5, 6] });
     assert_eq!(children[18], Children { parents: (0, 15), siblings: vec![0, 8, 16, 17, 27, 33, 43], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6] });
     assert_eq!(children[19], Children { parents: (2, 17), siblings: vec![2, 10, 20, 21, 22, 23, 24], value: 0, possible_values: vec![3, 5, 6, 7, 8, 9] });
@@ -613,7 +616,7 @@ mod tests {
     assert_eq!(children[25], Children { parents: (11, 18), siblings: vec![16, 26, 27, 28], value: 0, possible_values: vec![7, 8, 9] });
     assert_eq!(children[26], Children { parents: (7, 18), siblings: vec![7, 17, 25, 27, 28], value: 0, possible_values: vec![5, 7, 8, 9] });
     assert_eq!(children[27], Children { parents: (0, 18), siblings: vec![0, 8, 18, 25, 26, 28, 33, 43], value: 0, possible_values: vec![5, 7, 8] });
-    assert_eq!(children[28], Children { parents: (16, 18), siblings: vec![25, 26, 27, 34, 44], value: 0, possible_values: vec![5] });
+    assert_eq!(children[28], Children { parents: (16, 18), siblings: vec![25, 26, 27, 34, 44], value: 5, possible_values: vec![5] });
     assert_eq!(children[29], Children { parents: (13, 20), siblings: vec![20, 30, 31, 32, 36], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6, 7, 8] });
     assert_eq!(children[30], Children { parents: (9, 20), siblings: vec![11, 21, 29, 31, 32], value: 0, possible_values: vec![3, 4, 5, 6, 7, 8, 9] });
     assert_eq!(children[31], Children { parents: (3, 20), siblings: vec![3, 12, 22, 29, 30, 32, 37], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6, 7, 8, 9] });
@@ -631,7 +634,7 @@ mod tests {
     assert_eq!(children[43], Children { parents: (0, 27), siblings: vec![0, 8, 18, 27, 33, 41, 42, 44, 45], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6, 7] });
     assert_eq!(children[44], Children { parents: (16, 27), siblings: vec![28, 34, 41, 42, 43, 45], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6] });
     assert_eq!(children[45], Children { parents: (19, 27), siblings: vec![35, 41, 42, 43, 44, 51, 59], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6, 7] });
-    assert_eq!(children[46], Children { parents: (4, 30), siblings: vec![4, 13, 23, 32, 38, 47, 48, 54], value: 0, possible_values: vec![8] });
+    assert_eq!(children[46], Children { parents: (4, 30), siblings: vec![4, 13, 23, 32, 38, 47, 48, 54], value: 8, possible_values: vec![8] });
     assert_eq!(children[47], Children { parents: (21, 30), siblings: vec![39, 46, 48, 55, 63, 70, 78], value: 0, possible_values: vec![7, 8, 9] });
     assert_eq!(children[48], Children { parents: (22, 30), siblings: vec![40, 46, 47], value: 0, possible_values: vec![7, 8, 9] });
     assert_eq!(children[49], Children { parents: (23, 31), siblings: vec![41, 50, 56], value: 0, possible_values: vec![1, 2] });
@@ -647,9 +650,9 @@ mod tests {
     assert_eq!(children[59], Children { parents: (19, 39), siblings: vec![35, 45, 51, 58, 60, 61, 62], value: 0, possible_values: vec![1, 2, 3, 4, 5] });
     assert_eq!(children[60], Children { parents: (28, 39), siblings: vec![52, 58, 59, 61, 62, 68], value: 0, possible_values: vec![1, 2, 3, 4, 5] });
     assert_eq!(children[61], Children { parents: (34, 39), siblings: vec![58, 59, 60, 62, 69, 75, 85], value: 0, possible_values: vec![1, 2, 3, 4, 5] });
-    assert_eq!(children[62], Children { parents: (29, 39), siblings: vec![53, 58, 59, 60, 61], value: 0, possible_values: vec![5] });
+    assert_eq!(children[62], Children { parents: (29, 39), siblings: vec![53, 58, 59, 60, 61], value: 5, possible_values: vec![5] });
     assert_eq!(children[63], Children { parents: (21, 40), siblings: vec![39, 47, 55, 64, 70, 78], value: 0, possible_values: vec![7, 9] });
-    assert_eq!(children[64], Children { parents: (36, 40), siblings: vec![63, 71, 79], value: 0, possible_values: vec![9] });
+    assert_eq!(children[64], Children { parents: (36, 40), siblings: vec![63, 71, 79], value: 9, possible_values: vec![9] });
     assert_eq!(children[65], Children { parents: (24, 42), siblings: vec![42, 50, 57, 66, 67, 73, 81], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6, 7] });
     assert_eq!(children[66], Children { parents: (38, 42), siblings: vec![65, 67, 74, 82, 88, 97, 107, 116], value: 0, possible_values: vec![2, 4, 5, 6, 7] });
     assert_eq!(children[67], Children { parents: (32, 42), siblings: vec![58, 65, 66], value: 0, possible_values: vec![1, 2, 3, 4] });
@@ -659,7 +662,7 @@ mod tests {
     assert_eq!(children[71], Children { parents: (36, 46), siblings: vec![64, 70, 79], value: 0, possible_values: vec![6, 8, 9] });
     assert_eq!(children[72], Children { parents: (41, 47), siblings: vec![73, 74, 80], value: 0, possible_values: vec![1, 2, 3] });
     assert_eq!(children[73], Children { parents: (24, 47), siblings: vec![42, 50, 57, 65, 72, 74, 81], value: 0, possible_values: vec![1, 2, 3] });
-    assert_eq!(children[74], Children { parents: (38, 47), siblings: vec![66, 72, 73, 82, 88, 97, 107, 116], value: 0, possible_values: vec![2] });
+    assert_eq!(children[74], Children { parents: (38, 47), siblings: vec![66, 72, 73, 82, 88, 97, 107, 116], value: 2, possible_values: vec![2] });
     assert_eq!(children[75], Children { parents: (34, 50), siblings: vec![61, 69, 76, 77, 78, 79, 85], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6, 7] });
     assert_eq!(children[76], Children { parents: (44, 50), siblings: vec![75, 77, 78, 79, 86, 92], value: 0, possible_values: vec![5, 6, 7, 8, 9] });
     assert_eq!(children[77], Children { parents: (45, 50), siblings: vec![75, 76, 78, 79, 87, 93, 102, 112, 120], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6] });
@@ -671,7 +674,7 @@ mod tests {
     assert_eq!(children[83], Children { parents: (48, 51), siblings: vec![80, 81, 82, 89, 98, 108, 117], value: 0, possible_values: vec![1, 2, 3, 4] });
     assert_eq!(children[84], Children { parents: (49, 53), siblings: vec![85, 86, 87, 91, 100], value: 0, possible_values: vec![2, 3, 5] });
     assert_eq!(children[85], Children { parents: (34, 53), siblings: vec![61, 69, 75, 84, 86, 87], value: 0, possible_values: vec![1, 2, 3, 5] });
-    assert_eq!(children[86], Children { parents: (44, 53), siblings: vec![76, 84, 85, 87, 92], value: 0, possible_values: vec![5] });
+    assert_eq!(children[86], Children { parents: (44, 53), siblings: vec![76, 84, 85, 87, 92], value: 5, possible_values: vec![5] });
     assert_eq!(children[87], Children { parents: (45, 53), siblings: vec![77, 84, 85, 86, 93, 102, 112, 120], value: 0, possible_values: vec![1, 2, 3, 5] });
     assert_eq!(children[88], Children { parents: (38, 57), siblings: vec![66, 74, 82, 89, 90, 91, 97, 107, 116], value: 0, possible_values: vec![5, 7, 8, 9] });
     assert_eq!(children[89], Children { parents: (48, 57), siblings: vec![83, 88, 90, 91, 98, 108, 117], value: 0, possible_values: vec![5, 7] });
@@ -689,7 +692,7 @@ mod tests {
     assert_eq!(children[101], Children { parents: (58, 61), siblings: vec![96, 97, 98, 99, 100, 110, 118], value: 0, possible_values: vec![5, 6, 7, 8, 9] });
     assert_eq!(children[102], Children { parents: (45, 63), siblings: vec![77, 87, 93, 103, 104, 112, 120], value: 0, possible_values: vec![1, 2, 4] });
     assert_eq!(children[103], Children { parents: (54, 63), siblings: vec![94, 102, 104, 113], value: 0, possible_values: vec![1, 2, 4] });
-    assert_eq!(children[104], Children { parents: (55, 63), siblings: vec![95, 102, 103], value: 0, possible_values: vec![1] });
+    assert_eq!(children[104], Children { parents: (55, 63), siblings: vec![95, 102, 103], value: 1, possible_values: vec![1] });
     assert_eq!(children[105], Children { parents: (60, 64), siblings: vec![106, 107, 108, 109, 114], value: 0, possible_values: vec![1, 2, 4] });
     assert_eq!(children[106], Children { parents: (56, 64), siblings: vec![96, 105, 107, 108, 109, 115], value: 0, possible_values: vec![1, 2, 3, 4] });
     assert_eq!(children[107], Children { parents: (38, 64), siblings: vec![66, 74, 82, 88, 97, 105, 106, 108, 109, 116], value: 0, possible_values: vec![2, 4, 6] });
@@ -830,10 +833,10 @@ mod tests {
     
     assert_eq!(children[0], Children { parents: (0, 8), siblings: vec![1, 8, 20, 30, 39], value: 0, possible_values: vec![1, 2] });
     assert_eq!(children[1], Children { parents: (1, 8), siblings: vec![0, 9, 21], value: 0, possible_values: vec![1, 2] });
-    assert_eq!(children[2], Children { parents: (2, 10), siblings: vec![3, 11], value: 0, possible_values: vec![1] });
+    assert_eq!(children[2], Children { parents: (2, 10), siblings: vec![3, 11], value: 1, possible_values: vec![1] });
     assert_eq!(children[3], Children { parents: (3, 10), siblings: vec![2, 12], value: 0, possible_values: vec![1, 3] });
     assert_eq!(children[4], Children { parents: (4, 12), siblings: vec![5, 6, 14, 25, 35], value: 0, possible_values: vec![8, 9] });
-    assert_eq!(children[5], Children { parents: (5, 12), siblings: vec![4, 6, 15], value: 0, possible_values: vec![9] });
+    assert_eq!(children[5], Children { parents: (5, 12), siblings: vec![4, 6, 15], value: 9, possible_values: vec![9] });
     assert_eq!(children[6], Children { parents: (6, 12), siblings: vec![4, 5, 16, 26], value: 0, possible_values: vec![6, 8] });
     assert_eq!(children[7], Children { parents: (7, 15), siblings: vec![8, 9, 10, 11, 12, 13, 19, 29], value: 0, possible_values: vec![6, 8] });
     assert_eq!(children[8], Children { parents: (0, 15), siblings: vec![0, 7, 9, 10, 11, 12, 13, 20, 30, 39], value: 0, possible_values: vec![1, 2, 3, 4, 5] });
@@ -847,7 +850,7 @@ mod tests {
     assert_eq!(children[16], Children { parents: (6, 17), siblings: vec![6, 14, 15, 17, 18, 26], value: 0, possible_values: vec![4, 6, 7, 8] });
     assert_eq!(children[17], Children { parents: (13, 17), siblings: vec![14, 15, 16, 18, 27, 37, 48, 56, 65, 76], value: 0, possible_values: vec![4, 6, 7] });
     assert_eq!(children[18], Children { parents: (14, 17), siblings: vec![14, 15, 16, 17, 28, 38], value: 0, possible_values: vec![7, 8, 9] });
-    assert_eq!(children[19], Children { parents: (7, 18), siblings: vec![7, 20, 21, 22, 29], value: 0, possible_values: vec![6] });
+    assert_eq!(children[19], Children { parents: (7, 18), siblings: vec![7, 20, 21, 22, 29], value: 6, possible_values: vec![6] });
     assert_eq!(children[20], Children { parents: (0, 18), siblings: vec![0, 8, 19, 21, 22, 30, 39], value: 0, possible_values: vec![1, 2, 3, 4, 5] });
     assert_eq!(children[21], Children { parents: (1, 18), siblings: vec![1, 9, 19, 20, 22], value: 0, possible_values: vec![1, 2, 3, 4, 5] });
     assert_eq!(children[22], Children { parents: (9, 18), siblings: vec![10, 19, 20, 21], value: 0, possible_values: vec![1, 2] });
@@ -856,14 +859,14 @@ mod tests {
     assert_eq!(children[25], Children { parents: (4, 21), siblings: vec![4, 14, 23, 24, 35], value: 0, possible_values: vec![5, 7, 8, 9] });
     assert_eq!(children[26], Children { parents: (6, 23), siblings: vec![6, 16, 27, 28], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6, 7] });
     assert_eq!(children[27], Children { parents: (13, 23), siblings: vec![17, 26, 28, 37, 48, 56, 65, 76], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6, 7] });
-    assert_eq!(children[28], Children { parents: (14, 23), siblings: vec![18, 26, 27, 38], value: 0, possible_values: vec![7] });
+    assert_eq!(children[28], Children { parents: (14, 23), siblings: vec![18, 26, 27, 38], value: 7, possible_values: vec![7] });
     assert_eq!(children[29], Children { parents: (7, 24), siblings: vec![7, 19, 30], value: 0, possible_values: vec![8, 9] });
     assert_eq!(children[30], Children { parents: (0, 24), siblings: vec![0, 8, 20, 29, 39], value: 0, possible_values: vec![3, 4, 5] });
     assert_eq!(children[31], Children { parents: (19, 27), siblings: vec![32, 33, 34, 35, 36, 42, 51, 61], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6] });
     assert_eq!(children[32], Children { parents: (20, 27), siblings: vec![31, 33, 34, 35, 36, 43], value: 0, possible_values: vec![1, 2, 3, 5, 6] });
     assert_eq!(children[33], Children { parents: (11, 27), siblings: vec![13, 23, 31, 32, 34, 35, 36, 44, 52], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6] });
-    assert_eq!(children[34], Children { parents: (16, 27), siblings: vec![24, 31, 32, 33, 35, 36, 45, 53], value: 0, possible_values: vec![6] });
-    assert_eq!(children[35], Children { parents: (4, 27), siblings: vec![4, 14, 25, 31, 32, 33, 34, 36], value: 0, possible_values: vec![5] });
+    assert_eq!(children[34], Children { parents: (16, 27), siblings: vec![24, 31, 32, 33, 35, 36, 45, 53], value: 6, possible_values: vec![6] });
+    assert_eq!(children[35], Children { parents: (4, 27), siblings: vec![4, 14, 25, 31, 32, 33, 34, 36], value: 5, possible_values: vec![5] });
     assert_eq!(children[36], Children { parents: (22, 27), siblings: vec![31, 32, 33, 34, 35, 46], value: 0, possible_values: vec![1, 3] });
     assert_eq!(children[37], Children { parents: (13, 29), siblings: vec![17, 27, 38, 48, 56, 65, 76], value: 0, possible_values: vec![1, 2, 3, 4, 6, 7] });
     assert_eq!(children[38], Children { parents: (14, 29), siblings: vec![18, 28, 37], value: 0, possible_values: vec![7, 8, 9] });
@@ -874,7 +877,7 @@ mod tests {
     assert_eq!(children[43], Children { parents: (20, 30), siblings: vec![32, 39, 40, 41, 42, 44, 45], value: 0, possible_values: vec![3, 5, 6, 7] });
     assert_eq!(children[44], Children { parents: (11, 30), siblings: vec![13, 23, 33, 39, 40, 41, 42, 43, 45, 52], value: 0, possible_values: vec![3, 4, 5, 6, 7, 8, 9] });
     assert_eq!(children[45], Children { parents: (16, 30), siblings: vec![24, 34, 39, 40, 41, 42, 43, 44, 53], value: 0, possible_values: vec![6, 7, 8, 9] });
-    assert_eq!(children[46], Children { parents: (22, 32), siblings: vec![36, 47, 48], value: 0, possible_values: vec![1] });
+    assert_eq!(children[46], Children { parents: (22, 32), siblings: vec![36, 47, 48], value: 1, possible_values: vec![1] });
     assert_eq!(children[47], Children { parents: (28, 32), siblings: vec![46, 48, 55], value: 0, possible_values: vec![1, 2] });
     assert_eq!(children[48], Children { parents: (13, 32), siblings: vec![17, 27, 37, 46, 47, 56, 65, 76], value: 0, possible_values: vec![1, 2, 4] });
     assert_eq!(children[49], Children { parents: (25, 36), siblings: vec![40, 50, 51], value: 0, possible_values: vec![8, 9] });
@@ -882,7 +885,7 @@ mod tests {
     assert_eq!(children[51], Children { parents: (19, 36), siblings: vec![31, 42, 49, 50, 61], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6] });
     assert_eq!(children[52], Children { parents: (11, 38), siblings: vec![13, 23, 33, 44, 53, 54], value: 0, possible_values: vec![6, 8, 9] });
     assert_eq!(children[53], Children { parents: (16, 38), siblings: vec![24, 34, 45, 52, 54], value: 0, possible_values: vec![6, 8, 9] });
-    assert_eq!(children[54], Children { parents: (31, 38), siblings: vec![52, 53, 63], value: 0, possible_values: vec![6] });
+    assert_eq!(children[54], Children { parents: (31, 38), siblings: vec![52, 53, 63], value: 6, possible_values: vec![6] });
     assert_eq!(children[55], Children { parents: (28, 40), siblings: vec![47, 56, 57], value: 0, possible_values: vec![1, 2] });
     assert_eq!(children[56], Children { parents: (13, 40), siblings: vec![17, 27, 37, 48, 55, 57, 65, 76], value: 0, possible_values: vec![1, 2, 3] });
     assert_eq!(children[57], Children { parents: (33, 40), siblings: vec![55, 56, 66], value: 0, possible_values: vec![1, 2] });
@@ -915,7 +918,7 @@ mod tests {
     assert_eq!(children[84], Children { parents: (45, 53), siblings: vec![73, 77, 78, 79, 80, 81, 82, 83, 92, 101, 112, 121], value: 0, possible_values: vec![3, 5, 6, 7, 8] });
     assert_eq!(children[85], Children { parents: (39, 55), siblings: vec![64, 74, 86, 94, 103, 113, 123, 133, 142], value: 0, possible_values: vec![2, 3, 4, 5, 6, 7, 8, 9] });
     assert_eq!(children[86], Children { parents: (47, 55), siblings: vec![75, 85, 95, 104, 114], value: 0, possible_values: vec![2, 3, 4, 6] });
-    assert_eq!(children[87], Children { parents: (35, 57), siblings: vec![59, 68, 78, 88, 89, 90, 91], value: 0, possible_values: vec![5] });
+    assert_eq!(children[87], Children { parents: (35, 57), siblings: vec![59, 68, 78, 88, 89, 90, 91], value: 5, possible_values: vec![5] });
     assert_eq!(children[88], Children { parents: (42, 57), siblings: vec![69, 79, 87, 89, 90, 91, 97, 108], value: 0, possible_values: vec![1, 2, 3, 4, 5] });
     assert_eq!(children[89], Children { parents: (26, 57), siblings: vec![41, 50, 60, 70, 80, 87, 88, 90, 91, 98, 109, 119], value: 0, possible_values: vec![1, 2, 3, 4, 5] });
     assert_eq!(children[90], Children { parents: (50, 57), siblings: vec![81, 87, 88, 89, 91], value: 0, possible_values: vec![1, 3] });
@@ -928,9 +931,9 @@ mod tests {
     assert_eq!(children[97], Children { parents: (42, 62), siblings: vec![69, 79, 88, 98, 108], value: 0, possible_values: vec![8, 9] });
     assert_eq!(children[98], Children { parents: (26, 62), siblings: vec![41, 50, 60, 70, 80, 89, 97, 109, 119], value: 0, possible_values: vec![8, 9] });
     assert_eq!(children[99], Children { parents: (37, 63), siblings: vec![62, 71, 82, 91, 100, 101, 102, 103, 104, 105, 106, 110], value: 0, possible_values: vec![2, 3, 4, 5, 6, 7, 8] });
-    assert_eq!(children[100], Children { parents: (58, 63), siblings: vec![99, 101, 102, 103, 104, 105, 106, 111], value: 0, possible_values: vec![2] });
+    assert_eq!(children[100], Children { parents: (58, 63), siblings: vec![99, 101, 102, 103, 104, 105, 106, 111], value: 2, possible_values: vec![2] });
     assert_eq!(children[101], Children { parents: (45, 63), siblings: vec![73, 84, 92, 99, 100, 102, 103, 104, 105, 106, 112, 121], value: 0, possible_values: vec![3, 5, 6, 7, 8, 9] });
-    assert_eq!(children[102], Children { parents: (54, 63), siblings: vec![93, 99, 100, 101, 103, 104, 105, 106], value: 0, possible_values: vec![3] });
+    assert_eq!(children[102], Children { parents: (54, 63), siblings: vec![93, 99, 100, 101, 103, 104, 105, 106], value: 3, possible_values: vec![3] });
     assert_eq!(children[103], Children { parents: (39, 63), siblings: vec![64, 74, 85, 94, 99, 100, 101, 102, 104, 105, 106, 113, 123, 133, 142], value: 0, possible_values: vec![2, 3, 4, 5, 6, 7, 8, 9] });
     assert_eq!(children[104], Children { parents: (47, 63), siblings: vec![75, 86, 95, 99, 100, 101, 102, 103, 105, 106, 114], value: 0, possible_values: vec![2, 3, 4, 6] });
     assert_eq!(children[105], Children { parents: (56, 63), siblings: vec![96, 99, 100, 101, 102, 103, 104, 106, 115, 124], value: 0, possible_values: vec![2, 3, 5] });
@@ -945,24 +948,24 @@ mod tests {
     assert_eq!(children[114], Children { parents: (47, 69), siblings: vec![75, 86, 95, 104, 113, 115, 116], value: 0, possible_values: vec![1, 2, 3, 4] });
     assert_eq!(children[115], Children { parents: (56, 69), siblings: vec![96, 105, 113, 114, 116, 124], value: 0, possible_values: vec![1, 2, 3] });
     assert_eq!(children[116], Children { parents: (60, 69), siblings: vec![106, 113, 114, 115, 125], value: 0, possible_values: vec![1, 2, 4] });
-    assert_eq!(children[117], Children { parents: (64, 70), siblings: vec![118, 126], value: 0, possible_values: vec![1] });
+    assert_eq!(children[117], Children { parents: (64, 70), siblings: vec![118, 126], value: 1, possible_values: vec![1] });
     assert_eq!(children[118], Children { parents: (61, 70), siblings: vec![107, 117, 127, 135, 146, 156, 166], value: 0, possible_values: vec![1, 2] });
     assert_eq!(children[119], Children { parents: (26, 72), siblings: vec![41, 50, 60, 70, 80, 89, 98, 109, 120], value: 0, possible_values: vec![8, 9] });
-    assert_eq!(children[120], Children { parents: (66, 72), siblings: vec![119, 129], value: 0, possible_values: vec![9] });
+    assert_eq!(children[120], Children { parents: (66, 72), siblings: vec![119, 129], value: 9, possible_values: vec![9] });
     assert_eq!(children[121], Children { parents: (45, 75), siblings: vec![73, 84, 92, 101, 112, 122, 123], value: 0, possible_values: vec![3, 5, 6, 7, 8, 9] });
     assert_eq!(children[122], Children { parents: (68, 75), siblings: vec![121, 123, 132, 141, 152], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6] });
     assert_eq!(children[123], Children { parents: (39, 75), siblings: vec![64, 74, 85, 94, 103, 113, 121, 122, 133, 142], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6, 7, 8, 9] });
     assert_eq!(children[124], Children { parents: (56, 77), siblings: vec![96, 105, 115, 125], value: 0, possible_values: vec![1, 3] });
-    assert_eq!(children[125], Children { parents: (60, 77), siblings: vec![106, 116, 124], value: 0, possible_values: vec![1] });
+    assert_eq!(children[125], Children { parents: (60, 77), siblings: vec![106, 116, 124], value: 1, possible_values: vec![1] });
     assert_eq!(children[126], Children { parents: (64, 78), siblings: vec![117, 127, 128], value: 0, possible_values: vec![1, 3] });
     assert_eq!(children[127], Children { parents: (61, 78), siblings: vec![107, 118, 126, 128, 135, 146, 156, 166], value: 0, possible_values: vec![1, 2, 3, 4, 5] });
     assert_eq!(children[128], Children { parents: (71, 78), siblings: vec![126, 127, 136], value: 0, possible_values: vec![4, 5] });
-    assert_eq!(children[129], Children { parents: (66, 80), siblings: vec![120, 130, 131], value: 0, possible_values: vec![7] });
+    assert_eq!(children[129], Children { parents: (66, 80), siblings: vec![120, 130, 131], value: 7, possible_values: vec![7] });
     assert_eq!(children[130], Children { parents: (73, 80), siblings: vec![129, 131, 138, 149, 159], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6] });
     assert_eq!(children[131], Children { parents: (74, 80), siblings: vec![129, 130, 139, 150, 160, 170], value: 0, possible_values: vec![1, 2, 3, 4, 5] });
-    assert_eq!(children[132], Children { parents: (68, 82), siblings: vec![122, 133, 134, 141, 152], value: 0, possible_values: vec![6] });
+    assert_eq!(children[132], Children { parents: (68, 82), siblings: vec![122, 133, 134, 141, 152], value: 6, possible_values: vec![6] });
     assert_eq!(children[133], Children { parents: (39, 82), siblings: vec![64, 74, 85, 94, 103, 113, 123, 132, 134, 142], value: 0, possible_values: vec![6, 8, 9] });
-    assert_eq!(children[134], Children { parents: (76, 82), siblings: vec![132, 133, 143], value: 0, possible_values: vec![9] });
+    assert_eq!(children[134], Children { parents: (76, 82), siblings: vec![132, 133, 143], value: 9, possible_values: vec![9] });
     assert_eq!(children[135], Children { parents: (61, 85), siblings: vec![107, 118, 127, 136, 137, 146, 156, 166], value: 0, possible_values: vec![7, 8, 9] });
     assert_eq!(children[136], Children { parents: (71, 85), siblings: vec![128, 135, 137], value: 0, possible_values: vec![7, 8, 9] });
     assert_eq!(children[137], Children { parents: (79, 85), siblings: vec![135, 136, 147], value: 0, possible_values: vec![7, 9] });
@@ -971,7 +974,7 @@ mod tests {
     assert_eq!(children[140], Children { parents: (81, 87), siblings: vec![138, 139, 141, 142, 143, 144, 151], value: 0, possible_values: vec![3, 4, 5, 7] });
     assert_eq!(children[141], Children { parents: (68, 87), siblings: vec![122, 132, 138, 139, 140, 142, 143, 144, 152], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6] });
     assert_eq!(children[142], Children { parents: (39, 87), siblings: vec![64, 74, 85, 94, 103, 113, 123, 133, 138, 139, 140, 141, 143, 144], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6, 7] });
-    assert_eq!(children[143], Children { parents: (76, 87), siblings: vec![134, 138, 139, 140, 141, 142, 144], value: 0, possible_values: vec![7] });
+    assert_eq!(children[143], Children { parents: (76, 87), siblings: vec![134, 138, 139, 140, 141, 142, 144], value: 7, possible_values: vec![7] });
     assert_eq!(children[144], Children { parents: (83, 87), siblings: vec![138, 139, 140, 141, 142, 143, 153, 163, 175, 183], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6, 7] });
     assert_eq!(children[145], Children { parents: (84, 89), siblings: vec![146, 155, 165], value: 0, possible_values: vec![8, 9] });
     assert_eq!(children[146], Children { parents: (61, 89), siblings: vec![107, 118, 127, 135, 145, 156, 166], value: 0, possible_values: vec![8, 9] });
@@ -999,7 +1002,7 @@ mod tests {
     assert_eq!(children[168], Children { parents: (96, 101), siblings: vec![165, 166, 167, 169, 178], value: 0, possible_values: vec![1, 3] });
     assert_eq!(children[169], Children { parents: (86, 101), siblings: vec![148, 158, 165, 166, 167, 168, 179], value: 0, possible_values: vec![1, 2, 3] });
     assert_eq!(children[170], Children { parents: (74, 102), siblings: vec![131, 139, 150, 160, 171, 172, 173, 174, 175, 176], value: 0, possible_values: vec![1, 2, 3, 4, 5] });
-    assert_eq!(children[171], Children { parents: (98, 102), siblings: vec![170, 172, 173, 174, 175, 176, 180], value: 0, possible_values: vec![7] });
+    assert_eq!(children[171], Children { parents: (98, 102), siblings: vec![170, 172, 173, 174, 175, 176, 180], value: 7, possible_values: vec![7] });
     assert_eq!(children[172], Children { parents: (99, 102), siblings: vec![170, 171, 173, 174, 175, 176, 181], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6, 7] });
     assert_eq!(children[173], Children { parents: (92, 102), siblings: vec![161, 170, 171, 172, 174, 175, 176], value: 0, possible_values: vec![1, 3] });
     assert_eq!(children[174], Children { parents: (93, 102), siblings: vec![162, 170, 171, 172, 173, 175, 176, 182], value: 0, possible_values: vec![1, 2, 3, 4, 5, 6] });
@@ -1008,9 +1011,135 @@ mod tests {
     assert_eq!(children[177], Children { parents: (90, 103), siblings: vec![157, 167, 178, 179], value: 0, possible_values: vec![1, 2, 4] });
     assert_eq!(children[178], Children { parents: (96, 103), siblings: vec![168, 177, 179], value: 0, possible_values: vec![1, 3] });
     assert_eq!(children[179], Children { parents: (86, 103), siblings: vec![148, 158, 169, 177, 178], value: 0, possible_values: vec![1, 2, 3, 5] });
-    assert_eq!(children[180], Children { parents: (98, 104), siblings: vec![171, 181], value: 0, possible_values: vec![9] });
-    assert_eq!(children[181], Children { parents: (99, 104), siblings: vec![172, 180], value: 0, possible_values: vec![8] });
+    assert_eq!(children[180], Children { parents: (98, 104), siblings: vec![171, 181], value: 9, possible_values: vec![9] });
+    assert_eq!(children[181], Children { parents: (99, 104), siblings: vec![172, 180], value: 8, possible_values: vec![8] });
     assert_eq!(children[182], Children { parents: (93, 105), siblings: vec![162, 174, 183], value: 0, possible_values: vec![1, 3] });
     assert_eq!(children[183], Children { parents: (83, 105), siblings: vec![144, 153, 163, 175, 182], value: 0, possible_values: vec![1, 3] });
+  }
+
+  #[test]
+  fn test_starting_discovered_values_with_input_file_1() {
+    let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
+    let puzzle_file = "puzzles\\Kakuro_input.txt".to_string();
+    let mut discovered_values: VecDeque<usize>  = VecDeque::new();
+
+    puzzle_setup(&mut parents_and_children, puzzle_file);
+    starting_discovered_values(&mut parents_and_children, &mut discovered_values);
+
+    assert_eq!(discovered_values.len(), 9);
+
+    assert_eq!(discovered_values.pop_front().unwrap(), 5);
+    assert_eq!(discovered_values.pop_front().unwrap(), 6);
+    assert_eq!(discovered_values.pop_front().unwrap(), 14);
+    assert_eq!(discovered_values.pop_front().unwrap(), 15);
+    assert_eq!(discovered_values.pop_front().unwrap(), 21);
+    assert_eq!(discovered_values.pop_front().unwrap(), 35);
+    assert_eq!(discovered_values.pop_front().unwrap(), 52);
+    assert_eq!(discovered_values.pop_front().unwrap(), 55);
+    assert_eq!(discovered_values.pop_front().unwrap(), 57);
+  }
+
+  #[test]
+  fn test_starting_discovered_values_with_input_file_2() {
+    let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
+    let puzzle_file = "puzzles\\Kakuro_input2.txt".to_string();
+    let mut discovered_values: VecDeque<usize>  = VecDeque::new();
+
+    puzzle_setup(&mut parents_and_children, puzzle_file);
+    starting_discovered_values(&mut parents_and_children, &mut discovered_values);
+
+    assert_eq!(discovered_values.len(), 12);
+
+    assert_eq!(discovered_values.pop_front().unwrap(), 1);
+    assert_eq!(discovered_values.pop_front().unwrap(), 11);
+    assert_eq!(discovered_values.pop_front().unwrap(), 12);
+    assert_eq!(discovered_values.pop_front().unwrap(), 21);
+    assert_eq!(discovered_values.pop_front().unwrap(), 35);
+    assert_eq!(discovered_values.pop_front().unwrap(), 42);
+    assert_eq!(discovered_values.pop_front().unwrap(), 52);
+    assert_eq!(discovered_values.pop_front().unwrap(), 63);
+    assert_eq!(discovered_values.pop_front().unwrap(), 77);
+    assert_eq!(discovered_values.pop_front().unwrap(), 84);
+    assert_eq!(discovered_values.pop_front().unwrap(), 91);
+    assert_eq!(discovered_values.pop_front().unwrap(), 94);
+
+  }
+
+  #[test]
+  fn test_starting_discovered_values_with_input_file_3() {
+    let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
+    let puzzle_file = "puzzles\\Kakuro_input3.txt".to_string();
+    let mut discovered_values: VecDeque<usize>  = VecDeque::new();
+
+    puzzle_setup(&mut parents_and_children, puzzle_file);
+    starting_discovered_values(&mut parents_and_children, &mut discovered_values);
+
+    assert_eq!(discovered_values.len(), 4);
+
+    assert_eq!(discovered_values.pop_front().unwrap(), 0);
+    assert_eq!(discovered_values.pop_front().unwrap(), 27);
+    assert_eq!(discovered_values.pop_front().unwrap(), 56);
+    assert_eq!(discovered_values.pop_front().unwrap(), 79);
+
+  }
+
+  #[test]
+  fn test_starting_discovered_values_with_input_file_4() {
+    let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
+    let puzzle_file = "puzzles\\Kakuro_input4.txt".to_string();
+    let mut discovered_values: VecDeque<usize>  = VecDeque::new();
+
+    puzzle_setup(&mut parents_and_children, puzzle_file);
+    starting_discovered_values(&mut parents_and_children, &mut discovered_values);
+
+    assert_eq!(discovered_values.len(), 9);
+
+    assert_eq!(discovered_values.pop_front().unwrap(), 14);
+    assert_eq!(discovered_values.pop_front().unwrap(), 16);
+    assert_eq!(discovered_values.pop_front().unwrap(), 28);
+    assert_eq!(discovered_values.pop_front().unwrap(), 46);
+    assert_eq!(discovered_values.pop_front().unwrap(), 62);
+    assert_eq!(discovered_values.pop_front().unwrap(), 64);
+    assert_eq!(discovered_values.pop_front().unwrap(), 74);
+    assert_eq!(discovered_values.pop_front().unwrap(), 86);
+    assert_eq!(discovered_values.pop_front().unwrap(), 104);
+
+
+  }
+
+  #[test]
+  fn test_starting_discovered_values_with_input_file_5() {
+    let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
+    let puzzle_file = "puzzles\\Kakuro_input5.txt".to_string();
+    let mut discovered_values: VecDeque<usize>  = VecDeque::new();
+
+    puzzle_setup(&mut parents_and_children, puzzle_file);
+    starting_discovered_values(&mut parents_and_children, &mut discovered_values);
+
+    assert_eq!(discovered_values.len(), 21);
+
+    assert_eq!(discovered_values.pop_front().unwrap(), 2);
+    assert_eq!(discovered_values.pop_front().unwrap(), 5);
+    assert_eq!(discovered_values.pop_front().unwrap(), 19);
+    assert_eq!(discovered_values.pop_front().unwrap(), 28);
+    assert_eq!(discovered_values.pop_front().unwrap(), 34);
+    assert_eq!(discovered_values.pop_front().unwrap(), 35);
+    assert_eq!(discovered_values.pop_front().unwrap(), 46);
+    assert_eq!(discovered_values.pop_front().unwrap(), 54);
+    assert_eq!(discovered_values.pop_front().unwrap(), 87);
+    assert_eq!(discovered_values.pop_front().unwrap(), 100);
+    assert_eq!(discovered_values.pop_front().unwrap(), 102);
+    assert_eq!(discovered_values.pop_front().unwrap(), 117);
+    assert_eq!(discovered_values.pop_front().unwrap(), 120);
+    assert_eq!(discovered_values.pop_front().unwrap(), 125);
+    assert_eq!(discovered_values.pop_front().unwrap(), 129);
+    assert_eq!(discovered_values.pop_front().unwrap(), 132);
+    assert_eq!(discovered_values.pop_front().unwrap(), 134);
+    assert_eq!(discovered_values.pop_front().unwrap(), 143);
+    assert_eq!(discovered_values.pop_front().unwrap(), 171);
+    assert_eq!(discovered_values.pop_front().unwrap(), 180);
+    assert_eq!(discovered_values.pop_front().unwrap(), 181);
+
+
   }
 }

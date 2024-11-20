@@ -3,12 +3,12 @@
 * Author: Matthew Jacobs
 * Created: July 2024
 * Updated: November 2nd, 2024
-* Copyright: Matthew Jacobs
+* Copyright: 2024 Matthew Jacobs
 * Version: 0.1.0
 *
 */
 
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
@@ -257,9 +257,17 @@ fn set_siblings_and_possible_values(parents_and_children: &mut (Vec<Parents>, Ve
     // Find intersection and collect into a Vec<u8>
     let intersection_values: Vec<u8> = parent_1_values.intersection(&parent_2_values).cloned().collect();
 
+    if intersection_values.len() == 0 {
+      panic!("Invalid puzzle");
+    }
+
     // Append intersection values to child.possible_values
     child.possible_values.extend(intersection_values);
     child.possible_values.sort_unstable();
+
+    if child.possible_values.len() > 1 { continue; }
+
+    child.value = child.possible_values[0];
   }
 }
 
@@ -277,11 +285,30 @@ fn puzzle_setup(parents_and_children: &mut (Vec<Parents>, Vec<Children>), puzzle
   set_siblings_and_possible_values(parents_and_children);
 }
 
+/// Parameters:
+/// - parents_and_children: A mutable reference to a tuple containing a list of Parents and Children
+///      - This variable contains all prevalent information for solving the puzzle
+/// - discovered_values: A mutable reference to a deque which contains the indexs of child cells that
+///     can only be one value and that have not yet notified their parents and siblings
+/// 
+/// Description:
+///  - This function examines all the children and adds them to the discovered_values deque if it can only be one value
+fn starting_discovered_values(parents_and_children: &mut (Vec<Parents>, Vec<Children>), discovered_values: &mut VecDeque<usize>) {
+  for (index, child) in parents_and_children.1.iter().enumerate() {
+    if child.value == 0 { continue; }
+
+    discovered_values.push_back(index);
+  }
+}
+
 fn main() {
   let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
   let puzzle_file = "puzzles\\Kakuro_input.txt".to_string();
-  
+  let mut discovered_values: VecDeque<usize>  = VecDeque::new(); // use push_back() & pop_front()
+
   puzzle_setup(&mut parents_and_children, puzzle_file);
+  starting_discovered_values(&mut parents_and_children, &mut discovered_values);
+
 
   println!("Success");
 }
