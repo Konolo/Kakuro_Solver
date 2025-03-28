@@ -1062,7 +1062,6 @@ mod tests {
     assert_eq!(discovered_values.pop_front().unwrap(), 84);
     assert_eq!(discovered_values.pop_front().unwrap(), 91);
     assert_eq!(discovered_values.pop_front().unwrap(), 94);
-
   }
 
   #[test]
@@ -1080,7 +1079,6 @@ mod tests {
     assert_eq!(discovered_values.pop_front().unwrap(), 27);
     assert_eq!(discovered_values.pop_front().unwrap(), 56);
     assert_eq!(discovered_values.pop_front().unwrap(), 79);
-
   }
 
   #[test]
@@ -1103,8 +1101,6 @@ mod tests {
     assert_eq!(discovered_values.pop_front().unwrap(), 74);
     assert_eq!(discovered_values.pop_front().unwrap(), 86);
     assert_eq!(discovered_values.pop_front().unwrap(), 104);
-
-
   }
 
   #[test]
@@ -1139,7 +1135,5 @@ mod tests {
     assert_eq!(discovered_values.pop_front().unwrap(), 171);
     assert_eq!(discovered_values.pop_front().unwrap(), 180);
     assert_eq!(discovered_values.pop_front().unwrap(), 181);
-
-
   }
 }

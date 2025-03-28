@@ -2,7 +2,7 @@
 *
 * Author: Matthew Jacobs
 * Created: July 2024
-* Updated: November 2nd, 2024
+* Updated: March 26th, 2025
 * Copyright: 2024 Matthew Jacobs
 * Version: 0.1.0
 *
@@ -11,6 +11,9 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
+use colored::Colorize;
+
+const CELL_WIDTH: usize = 5;
 
 #[cfg(test)]
 mod tests;
@@ -34,6 +37,7 @@ struct Parents {
 }
 
 #[derive(Debug)]
+#[derive(Clone)]
 #[derive(PartialEq, Eq)]
 struct Children {
   parents: (usize, usize),
@@ -118,15 +122,17 @@ fn set_possible_combinations(parents_and_children: &mut (Vec<Parents>, Vec<Child
 /// Description:
 /// - This function reads in the puzzle from a file and establishes a grid which acts like a scaffold 
 ///      which allows the function to connect the parents to their children
-fn insert_puzzle_and_connect_parents_and_children(parents_and_children: &mut (Vec<Parents>, Vec<Children>), puzzle_file: String) {
+fn insert_puzzle_and_connect_parents_and_children(parents_and_children: &mut (Vec<Parents>, Vec<Children>), puzzle_file: String) -> Vec<String> {
   // Creates a file object and buffer reader
   let file = File::open(puzzle_file).expect("Failed to open file");
   let reader = BufReader::new(file);
   let mut grid: Vec<Vec<GridCell>> = Vec::new();
+  let mut board_pattern: Vec<String> = Vec::new();
 
   // Loop through each line of the file
   for line in reader.lines() {
     let line = line.expect("Failed to read line");
+    board_pattern.push(line.clone());
     grid.push(Vec::new());
         
     // Split the line into multiple segments
@@ -229,6 +235,8 @@ fn insert_puzzle_and_connect_parents_and_children(parents_and_children: &mut (Ve
       }
     }
   }
+
+  return board_pattern;
 }
 
 /// Parameters:
@@ -279,10 +287,12 @@ fn set_siblings_and_possible_values(parents_and_children: &mut (Vec<Parents>, Ve
 /// Description:
 /// - This function calls other functions which together set up the parents_and_children variable
 ///     to the point where the puzzle can be solved
-fn puzzle_setup(parents_and_children: &mut (Vec<Parents>, Vec<Children>), puzzle_file: String) {
-  insert_puzzle_and_connect_parents_and_children(parents_and_children, puzzle_file);
+fn puzzle_setup(parents_and_children: &mut (Vec<Parents>, Vec<Children>), puzzle_file: String) -> Vec<String> {
+  let board_pattern = insert_puzzle_and_connect_parents_and_children(parents_and_children, puzzle_file);
   set_possible_combinations(parents_and_children);
   set_siblings_and_possible_values(parents_and_children);
+
+  return board_pattern;
 }
 
 /// Parameters:
@@ -301,14 +311,319 @@ fn starting_discovered_values(parents_and_children: &mut (Vec<Parents>, Vec<Chil
   }
 }
 
+
+/*
+/// Parameters:
+/// - parents_and_children: A mutable reference to a tuple containing a list of Parents and Children
+///      - This variable contains all prevalent information for solving the puzzle
+/// - parents: A tuple which contains the indexes of both parent cells
+/// - value: The value discovered by a child cell
+/// 
+/// Description:
+/// - 
+fn notify_parents(parents_and_children: &mut (Vec<Parents>, Vec<Children>), parents: &(usize, usize), value: &u8) {
+  let (parents_vec, _) = parents_and_children;
+
+  let (parent1, parent2) = {
+    let (left, right) = parents_vec.split_at_mut(parents.1);
+    (&mut left[parents.0], &mut right[0])
+  };
+
+  //println!("{:?}", parent1.combinations);
+  //println!("{:?}", parent2.combinations);
+  //println!("{}", value);
+
+  parent1.combinations.retain(|combination| combination.contains(&value));
+  parent2.combinations.retain(|combination| combination.contains(&value));
+
+  let remaining_parent1_values: HashSet<u8> = parent1.combinations.iter().flat_map(|v| v.iter()).cloned().collect();
+  let remaining_parent2_values: HashSet<u8> = parent2.combinations.iter().flat_map(|v| v.iter()).cloned().collect();
+ 
+  for parent_info in [(parent1, remaining_parent1_values), (parent2, remaining_parent2_values)] {
+    for child_index in &parent_info.0.children {
+      let child_possible_values = &mut parents_and_children.1[*child_index].possible_values;
+
+      //println!("{:?}", parent_info.1);
+      //println!("{:?}", child_possible_values);
+
+      child_possible_values.retain(|v| parent_info.1.contains(v));
+
+      //println!("{:?}\n", child_possible_values);
+    }
+  }
+  //println!("{:?}", remaining_parent1_combinations);
+  //println!("{:?}\n", remaining_parent2_combinations);
+}
+
+/// Parameters:
+/// - parents_and_children: A mutable reference to a tuple containing a list of Parents and Children
+///      - This variable contains all prevalent information for solving the puzzle
+/// - discovered_values: A mutable reference to a deque which contains the indexs of child cells that
+///     can only be one value and that have not yet notified their parents and siblings
+/// - siblings: A list of indexes to all of the sibling cells
+/// - value: The value discovered by a child cell
+/// 
+/// Description:
+/// - 
+fn notify_siblings(parents_and_children: &mut (Vec<Parents>, Vec<Children>), discovered_values: &mut VecDeque<usize>, siblings: &Vec<usize>, value: &u8) {
+  for sibling in siblings {
+    let child = &mut parents_and_children.1[*sibling];
+
+    if child.value > 0 { continue; }
+
+    //println!("{}", value);
+    //println!("{:?}", child.possible_values);
+    child.possible_values.retain(|v| v != value);
+    //println!("{:?}\n", child.possible_values);
+
+    if child.possible_values.len() > 1 { continue; }
+
+    child.value = child.possible_values[0];
+    discovered_values.push_back(*sibling);
+  }
+}
+
+/// Parameters:
+/// - parents_and_children: A mutable reference to a tuple containing a list of Parents and Children
+///      - This variable contains all prevalent information for solving the puzzle
+/// - discovered_values: A mutable reference to a deque which contains the indexs of child cells that
+///     can only be one value and that have not yet notified their parents and siblings
+/// 
+/// Description:
+/// - 
+fn notify_parents_and_siblings(parents_and_children: &mut (Vec<Parents>, Vec<Children>), discovered_values: &mut VecDeque<usize>) {
+  while !discovered_values.is_empty() {
+    let child_index = discovered_values.pop_front().unwrap();
+    let child = &parents_and_children.1[child_index].clone();
+
+    notify_parents(parents_and_children, &child.parents, &child.value);
+    notify_siblings(parents_and_children, discovered_values, &child.siblings, &child.value);
+  }
+}
+*/
+
+
+fn solver(parents_and_children: &mut (Vec<Parents>, Vec<Children>), discovered_values: &mut VecDeque<usize>) {
+  while !discovered_values.is_empty() {
+    let child_index = discovered_values.pop_front().unwrap();
+    let child = &parents_and_children.1[child_index].clone();
+    
+    
+    let (parents_vec, _) = parents_and_children;
+
+    let (parent1, parent2) = {
+      let (left, right) = parents_vec.split_at_mut(child.parents.1);
+      (&mut left[child.parents.0], &mut right[0])
+    };
+
+
+    // 1) Takes the value of the discovered cell and makes sure that its parents possible combinations contain the value 
+    //    from the discovered cell. 
+    // 2) From there the parents determine all the possible values their children could have.
+    // 3) Lastly, the parents inform all of their children of all the values they could be.
+
+    // 1)
+    parent1.combinations.retain(|combination| combination.contains(&child.value));
+    parent2.combinations.retain(|combination| combination.contains(&child.value));
+    
+    // 2)
+    let remaining_parent1_values: HashSet<u8> = parent1.combinations.iter().flat_map(|v| v.iter()).cloned().collect();
+    let remaining_parent2_values: HashSet<u8> = parent2.combinations.iter().flat_map(|v| v.iter()).cloned().collect();
+    
+    // 3)
+    for parent_info in [(parent1, remaining_parent1_values), (parent2, remaining_parent2_values)] {
+      for index in &parent_info.0.children {
+        let child_possible_values = &mut parents_and_children.1[*index].possible_values;
+        
+        child_possible_values.retain(|v| parent_info.1.contains(v));
+      }
+    }
+    
+    
+    // 1) For each sibling cell of the discovered child cell, we make sure that the siblings value 
+    //    cant be that of the discovered cell.
+    // 2) For both parents of the sibling cell we compute its hashset then
+    //    2a) We look at all of the combinations that the parent could be and only keep those that have at least one
+    //        overlapping value with the possible values of its child (the sibling cell of the discovered cell).
+    //    2b) After that we recompute the parents hashset, and if there is a difference, then we add the index of 
+    //        that parent and their hashset to a list of parents who need to update their children
+    // 3) Finally, if the sibling can only be one value, then their value is set and they are added to the list of discovered cells
+
+    let mut parents_who_need_to_update_their_children: VecDeque<(usize, HashSet<u8>)> = VecDeque::new();
+    // 1)
+    for sibling_index in &child.siblings {
+      let sibling = &mut parents_and_children.1[*sibling_index];
+      
+      if sibling.value > 0 { continue; }
+      
+      sibling.possible_values.retain(|v| v != &child.value);
+
+      // 2)
+      for parent_index in [&sibling.parents.0, &sibling.parents.1] {
+        let parent = &mut parents_and_children.0[*parent_index];
+        let parent_hashset_before: HashSet<u8> = parent.combinations.iter().flat_map(|v| v.iter()).cloned().collect();
+        // 2a)
+        parent.combinations.retain(|combo| {
+          for v in &sibling.possible_values {
+            if combo.contains(v) {return true}
+          }
+          return false
+        });
+        // 2b)
+        let parent_hashset_after: HashSet<u8> = parent.combinations.iter().flat_map(|v| v.iter()).cloned().collect();
+        if parent_hashset_before.difference(&parent_hashset_after).count() > 0 {
+          parents_who_need_to_update_their_children.push_back((*parent_index, parent_hashset_after.clone()));
+        }
+      }
+        
+      // 3)
+      if sibling.possible_values.len() > 1 { continue; }
+  
+      sibling.value = sibling.possible_values[0];
+      discovered_values.push_back(*sibling_index);
+    }
+
+    // For each parent who needs to update their children, they inform all of their children of all the values they could be.
+    while !parents_who_need_to_update_their_children.is_empty() {
+      let parent_index_and_hashset = parents_who_need_to_update_their_children.pop_front().unwrap();
+      
+      for child_index in &parents_and_children.0[parent_index_and_hashset.0].children {
+        let child_possible_values = &mut parents_and_children.1[*child_index].possible_values;
+        
+        child_possible_values.retain(|v| parent_index_and_hashset.1.contains(v));
+      }
+    }
+
+
+
+
+  }
+}
+
+
+fn print_kakuro_board(board_pattern: Vec<String>, parents_and_children: &(Vec<Parents>, Vec<Children>)) {
+  let mut parent_index = 0;
+  let mut child_index = 0;
+  let mut board_width: usize = 0;
+    
+  for line in board_pattern {
+    // Split the line into board pattern and clue segments
+    let mut elements = line.split_whitespace();
+    let board = elements.next().expect("Board pattern missing");
+    board_width = (board.len() * (CELL_WIDTH + 1)) + 1;
+
+    if parent_index == 0 {
+      print_horizontal_border(board_width, true);
+    } else {
+      print_horizontal_border(board_width - 2, false);
+    }
+
+    for cell_type in board.chars() {
+      match cell_type {
+        '\\' => {
+          let clue_data = elements.next().expect("Parent cell data missing");
+          let mut values = clue_data.split('\\');
+          let vert = values.next().unwrap_or("-").to_string();
+          let horz = values.next().unwrap_or("-").to_string();
+                
+          print_parent_cell(
+            &mut parent_index,
+            &parents_and_children.0,
+            vert,
+            horz
+          );
+        },
+        '-' => print_empty_cell(),
+        'x' => print_child_cell(&mut child_index, &parents_and_children.1),
+        _ => {
+          eprintln!("Warning: Invalid character '{}' in board pattern", cell_type);
+           print_empty_cell(); // Fallback to empty cell instead of panicking
+        }
+      }
+    }
+    println!("|");
+  }  
+  print_horizontal_border(board_width, true);
+}
+
+fn print_horizontal_border(width: usize, external_horizontal_border: bool) {
+  if external_horizontal_border { println!("{}", "-".repeat(width)); }
+  else { println!("|{}|", "-".repeat(width)); }
+}
+
+fn print_empty_cell() {
+  print!("|{}", "     ".on_black());
+}
+
+fn print_parent_cell(parent_index: &mut usize, parents: &Vec<Parents>, vert_clue: String, horz_clue: String) {
+  print!("|");
+  
+  let mut cell_content = String::with_capacity(CELL_WIDTH);
+  
+  // Handle vertical clue
+  if vert_clue != "-" {
+    let parent_val = format_parent_value(&parents[*parent_index].sum);
+    cell_content.push_str(&parent_val);
+    cell_content.push('\\');
+    *parent_index += 1;
+  } else {
+    cell_content.push_str("  \\");
+  }
+  
+  // Handle horizontal clue
+  if horz_clue != "-" {
+    let parent_val = format_parent_value(&parents[*parent_index].sum);
+    cell_content.push_str(&parent_val);
+    *parent_index += 1;
+  } else {
+    cell_content.push_str("  ");
+  }
+  
+  print!("{}", cell_content.black().on_yellow());
+}
+
+fn format_parent_value(value: &u8) -> String {
+  // Ensure two-digit format
+  let value_str = value.to_string();
+  if value_str.len() == 1 {
+    format!("0{}", value_str)
+  } else {
+    value_str
+  }
+}
+
+fn print_child_cell(child_index: &mut usize, children: &Vec<Children>) {
+  let child_val = &children[*child_index].value;
+  let cell_content = format!("  {}  ", child_val);
+    
+  print!("|{}", cell_content.black().on_white());
+  *child_index += 1;
+}
+
 fn main() {
   let mut parents_and_children: (Vec<Parents>, Vec<Children>) = (Vec::new(), Vec::new());
   let puzzle_file = "puzzles\\Kakuro_input.txt".to_string();
   let mut discovered_values: VecDeque<usize>  = VecDeque::new(); // use push_back() & pop_front()
 
-  puzzle_setup(&mut parents_and_children, puzzle_file);
+  let board_pattern = puzzle_setup(&mut parents_and_children, puzzle_file);
   starting_discovered_values(&mut parents_and_children, &mut discovered_values);
 
+  if discovered_values.is_empty() {
+    panic!("This puzzle currently can't be solved because of the complexity");
+  }
 
+  solver(&mut parents_and_children, &mut discovered_values);
+
+  let mut count = 0;
+  for child in &parents_and_children.1 {
+    if child.value == 0 {
+      count += 1;
+      println!("{:?}", child);
+    }
+  }
+
+  println!("{}", count);
   println!("Success");
+
+  print_kakuro_board(board_pattern, &parents_and_children);
 }
